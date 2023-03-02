@@ -10,7 +10,9 @@ everything else should be okay i think. try it and see.
 this bad code brought to you by Abbas. direct all complaints to your nearest wall.  
 
 ### how do i run this?
-sort out the venv or whatever idk how it works
-source something in the bin
+```pip install --user pipenv```
+
+```cd controller-firmware && pipenv install``` (pipenv is in `~/.local/bin/pipenv`)
+
+```pipenv run python src/main.py <path_to_ur_image>```
   
-then `python3 src/main.py <path_to_ur_image>`
