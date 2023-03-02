@@ -3,6 +3,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 from PIL import Image
 import math
+from collections import deque
+
+road_width = 60
 
 subpltcol = 3
 subpltrow = 3
@@ -16,6 +19,8 @@ def showimg(img, title):
     plt.xticks([])
     plt.yticks([])
     subpltind += 1
+
+
 
 params = cv.SimpleBlobDetector_Params()
 
@@ -44,12 +49,14 @@ params.minInertiaRatio = 0.01
 
 detector = cv.SimpleBlobDetector_create(params)
 
-img = cv.imread("../road.png")
+img = cv.imread("../road2.png")
 # hsv = cv.flip(cv.cvtColor(img, cv.COLOR_BGR2HSV), 0)
 hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
 # img = Image.fromarray(np.uint8(img))
 thresholded = cv.bitwise_not(cv.inRange(hsv, (0, 0, 100), (255, 30, 255)))
 yellowed = (cv.inRange(hsv, (20, 70, 70), (40, 255, 255)))
+
+showimg(cv.cvtColor(img, cv.COLOR_BGR2RGB), "src")
 
 num_labels, labels_im = cv.connectedComponents(yellowed)
 print(num_labels)
@@ -253,6 +260,8 @@ for series in dot_series:
 
 subpltind += 1
 
+# plt.show()
+
 plt.subplot(subpltrow, subpltcol, subpltind)
 plt.title("screaming")
 class PathNode:
@@ -262,6 +271,7 @@ class PathNode:
         self.src = src
         self.conns = set()
         self.isection_ind = -1
+        # self.start = False
 
     def add_conn(self, pn):
         self.conns.add(pn)
@@ -293,14 +303,14 @@ for series in dot_series:
         m = (orig_m**(-1))*-1
         x1 = series[i].x
         y1 = series[i].y
-        l = 30
+        l = road_width / 2
 
         # pronounced th-eyyyy-ta
         theta = math.atan(m)
         xv = l * math.cos(theta)
         yv = l * math.sin(theta)
         
-        plt.scatter([x1 + xv, x1 - xv], [y1 + yv, y1 - yv])
+        # plt.scatter([x1 + xv, x1 - xv], [y1 + yv, y1 - yv])
 
         n1 = PathNode(x1 + xv, y1 + yv, series[i])
         # if len(s1) != 1:
@@ -312,7 +322,7 @@ for series in dot_series:
         if len(s1) == 0:
             s1.append(n1)
             s2.append(n2)
-        elif n1.dist(s1[-1]) < n2.dist(s1[-1]):
+        elif n1.dist(s1[-1]) + n2.dist(s2[-1]) < n1.dist(s2[-1]) + n2.dist(s1[-1]):
             s1.append(n1)
             s2.append(n2)
         else:
@@ -353,62 +363,201 @@ for series in dot_series:
     path_series.append(s2)
 print(yellowed)
 
+
+def sign(n):
+    return round(n/abs(n))
+
 # add inodes
 for series in path_series:
     if len(series) == 0: continue # fix dis
     # first one
     # intersection mafs
     # we BACKtrack along orig_m
+    # first, if it's already in an intsect, we need not bother
+    if yellowed[round(series[0].y), round(series[0].x)] != 0:
+        # find which one
+        for j in range(len(intersections)):
+            if j[series[0].y, series[0].x] != 0:
+                series[0].isection_ind = j
+                intersection_nodes[j].append(series[0])
+                break
+        continue
+
     x1 = series[0].x
     y1 = series[0].y
     dy = series[0].y - series[1].y
     dx = series[0].x - series[1].x
-    # plt.plot([series[0].x, series[1].x], [series[0].y, series[1].y])
     if dx == 0: dx = 0.00001
+    if dy == 0: dy = -0.00001
     m = dy/dx
-    theta = math.atan(m)
+    theta = math.atan(abs(m))
     xv = 0
     yv = 0
     l = 1
-    try:
-        while yellowed[round(x1 - xv)][round(y1 - yv)] == 0:
-            xv = l * math.cos(theta)
-            yv = l * math.sin(theta)
-            # plt.scatter([round(x1 - xv)], [round(y1 - yv)])
-            
-            l += 1
-            if l > 50 or (round(x1 - xv) < 0) or round(x1 - xv) + 5 > len(yellowed) or (round(y1 - yv) < 0) or round(y1 - yv) + 5 > len(yellowed[0]): break
-    except: pass
-    try:
+    # try:
+    while yellowed[round(y1 - yv), round(x1 - xv)] == 0:
+        # TODO: What in the absolute sodding hell does this do
+        # and why does it work so well
+        xv = l * math.cos(theta) * sign(dx) * -1
+        yv = l * math.sin(theta) * sign(dy) * -1
+        l += 1
 
-        # now we have to find which one
-        inode = None
-        print("match on", round(x1 - xv), round(y1 - yv), l)
+    # now we have to find which one
+
+    # move in a little bit
+    l += road_width/8
+    xv = l * math.cos(theta) * sign(dx) * -1
+    yv = l * math.sin(theta) * sign(dy) * -1
+
+    inode = None
+    for j in range(len(intersections)):
+        if intersections[j][round(y1 - yv), round(x1 - xv)] != 0:
+            inode = PathNode(x1 - round(xv), y1 - round(yv), series[i])
+            inode.isection_ind = j
+            inode.add_conn(series[0])
+            intersection_nodes[j].append(inode)
+            break
+
+    if inode != None:
+        series.insert(0, inode)
+    else:
+        print("aaaa")
+    
+    # AGAIN but now last
+    # TODO: dedup logic
+    if yellowed[round(series[-1].y), round(series[-1].x)] != 0:
+        # find which one
         for j in range(len(intersections)):
-            if intersections[j][round(x1 - xv)][round(y1 - yv)] != 0:
-                inode = PathNode(x1 - round(xv), y1 - round(yv), series[i])
-                inode.isection_ind = j
-                intersection_nodes[j].append(inode)
-                print("hello", j)
-
+            if j[series[-1].y, series[-1].x] != 0:
+                series[-1].isection_ind = j
+                intersection_nodes[j].append(series[-1])
                 break
-        print("here")
-        if inode != None:
-            print("did work")
-            series.insert(0, inode)
-    except: pass
+        continue
+
+    x1 = series[-1].x
+    y1 = series[-1].y
+    dy = series[-1].y - series[-2].y
+    dx = series[-1].x - series[-2].x
+    # if dx == 0: dx = 0.00001
+    # if dy == 0: dy = 0.00001
+    m = dy/dx
+    theta = math.atan(abs(m))
+    xv = 0
+    yv = 0
+    l = 1
+    # try:
+    while yellowed[round(y1 + yv), round(x1 + xv)] == 0:
+        # TODO: What in the absolute sodding hell does this do
+        # and why does it work so well
+        xv = l * math.cos(theta) * sign(dx)
+        yv = l * math.sin(theta) * sign(dy)
+        l += 1
+        if abs(round(y1 + yv)) >= yellowed.shape[0] or abs(round(x1 + xv)) >= yellowed.shape[1]: break
+
+    # overshoot just a little, maybe?
+    # xv = (l+2) * math.cos(theta) * sign(dx)
+    # yv = (l+2) * math.sin(theta) * sign(dy)
+
+    l += road_width/8
+    xv = l * math.cos(theta) * sign(dx)
+    yv = l * math.sin(theta) * sign(dy)
+
+    # now we have to find which one
+    inode = None
+    for j in range(len(intersections)):
+        if intersections[j][round(y1 + yv), round(x1 + xv)] != 0:
+            inode = PathNode(x1 + round(xv), y1 + round(yv), series[i])
+            inode.isection_ind = j
+            inode.add_conn(series[-1])
+            intersection_nodes[j].append(inode)
+            break
+
+    if inode != None:
+        series.append(inode)
+    else:
+        print("bbb")
+        # guess i guess
+        # l = 30
+        # xv = l * math.cos(theta) * sign(dx)
+        # yv = l * math.sin(theta) * sign(dy)
+        # inode = PathNode(x1 + round(xv), y1 + round(yv), series[i])
+        # inode.isection_ind = -2
+        # series.append(inode)
+
+
 
 # plt.show()
 
 colours = ['red', 'orange', 'green', 'blue', 'purple']
 series_idx = 0
 for series in path_series:
+    if len(series) == 0: continue
+    i = -1
+    if series[i+1].isection_ind != -1:
+        plt.scatter([series[i+1].x], [series[i+1].y], c='orange')
+    else:
+        plt.scatter([series[i+1].x], [series[i+1].y], c='purple')
     for i in range(len(series) - 1):
         plt.plot([series[i].x, series[i+1].x], [series[i].y, series[i+1].y], colours[series_idx % len(colours)], linestyle=':')
+        if series[i+1].isection_ind != -1:
+            plt.scatter([series[i+1].x], [series[i+1].y], c='red')
+        else:
+            plt.scatter([series[i+1].x], [series[i+1].y], c='blue')
 
     series_idx += 1
 
 subpltind += 1
+
+# now we link up the intersections
+# go through each
+for nodes in intersection_nodes:
+    if len(nodes) == 0: continue
+    # pull the same annoying circular linking trick
+    q = deque(nodes[1:])
+    nodes_linear = [nodes[0]]
+    while len(q) != 0:
+        # find the closest that isnt already in the list
+        mindist = math.inf
+        mn = None
+        for node in q:
+            dist = math.sqrt((node.x - nodes_linear[-1].x)**2 + (node.y - nodes_linear[-1].y)**2)
+            if dist < mindist:
+                mindist = dist
+                mn = node
+
+        # now, connect it to odd ones plz
+        q.remove(mn)
+        for inverse_idx in range(-1, -len(nodes_linear) - 1, -2):
+            nodes_linear[inverse_idx].add_conn(mn)
+
+        nodes_linear.append(mn)
+
+    # for i in range(len(nodes_linear)):
+        # nodes_linear[i].add_conn(nodes_linear[(i+1)%len(nodes_linear)])
+        # for b in range(i):
+            # if i%2 != b%2:
+                # nodes_linear[i].add_conn(nodes_linear[b])
+
+plt.figure()
+
+# plt.subplot(subpltrow, subpltcol, subpltind)
+# plt.title("chorus of misery")
+
+plt.imshow(cv.cvtColor(img, cv.COLOR_BGR2RGB))
+
+all_of_them = set()
+for series in path_series:
+    for node in series:
+        all_of_them.add(node)
+
+# plot this garbage
+for node in list(all_of_them):
+    for other in node.conns:
+        plt.plot([node.x, other.x], [node.y, other.y], 'red', linestyle=':')
+
+
+
+
 
 """
 plt.subplot(subpltrow, subpltcol, subpltind)
@@ -499,8 +648,7 @@ target = cv.bitwise_and(img,img, mask=mask)
 
 # plt.imshow(img, "gray")
 # plt.imshow(thresholded, "gray")
-res = cv.cvtColor(yellowed, cv.COLOR_GRAY2BGR) # 255-cv.cvtColor(thresholded, cv.COLOR_HSV2BGR)
-showimg(cv.cvtColor(img, cv.COLOR_BGR2RGB), "src")
+# res = cv.cvtColor(yellowed, cv.COLOR_GRAY2BGR) # 255-cv.cvtColor(thresholded, cv.COLOR_HSV2BGR)
 # showimg(res, "filtered")
 # showimg(res, "yellowed")
 plt.show()
