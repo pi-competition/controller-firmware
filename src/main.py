@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 from PIL import Image
 import math
 from collections import deque
+from sys import argv
 
 road_width = 60
 
@@ -49,7 +50,7 @@ params.minInertiaRatio = 0.01
 
 detector = cv.SimpleBlobDetector_create(params)
 
-img = cv.imread("../road2.png")
+img = cv.imread(argv[1])
 # hsv = cv.flip(cv.cvtColor(img, cv.COLOR_BGR2HSV), 0)
 hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
 # img = Image.fromarray(np.uint8(img))

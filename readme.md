@@ -8,3 +8,9 @@ in which case the shape doesn't matter. knock yourself out.
   
 everything else should be okay i think. try it and see.  
 this bad code brought to you by Abbas. direct all complaints to your nearest wall.  
+
+### how do i run this?
+sort out the venv or whatever idk how it works
+source something in the bin
+  
+then `python3 src/main.py <path_to_ur_image>`
