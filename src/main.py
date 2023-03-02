@@ -64,6 +64,10 @@ print(num_labels)
 split = np.array(labels_im)
 
 yellowed = np.array(yellowed)
+plt.subplot(subpltrow, subpltcol, subpltind)
+plt.title("intsects")
+plt.imshow(cv.cvtColor(yellowed, cv.COLOR_GRAY2RGB))
+subpltind += 1
 
 intersections = []
 intersection_nodes = []
@@ -79,10 +83,10 @@ for i in range(1, num_labels):
     # plt.imshow(specific) # cv.cvtColor(specific, cv.COLOR_GRAY2RGB))
     # plt.show()
     # subpltind += 1
-for i in intersections:
-    plt.subplot(subpltrow, subpltcol, subpltind)
-    plt.imshow(i)
-    subpltind += 1
+# for i in intersections:
+    # plt.subplot(subpltrow, subpltcol, subpltind)
+    # plt.imshow(i)
+    # subpltind += 1
 
 def imshow_components(labels):
     # Map component labels to hue val
