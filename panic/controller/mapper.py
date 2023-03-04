@@ -5,6 +5,8 @@ from PIL import Image
 import math
 from collections import deque
 from sys import argv
+from model import PathNode
+
 
 road_width = 60
 
@@ -269,21 +271,7 @@ subpltind += 1
 
 plt.subplot(subpltrow, subpltcol, subpltind)
 plt.title("screaming")
-class PathNode:
-    def __init__(self, x, y, src):
-        self.x = x
-        self.y = y
-        self.src = src
-        self.conns = set()
-        self.isection_ind = -1
-        # self.start = False
 
-    def add_conn(self, pn):
-        self.conns.add(pn)
-        pn.conns.add(self)
-
-    def dist(self, other):
-        return math.sqrt((self.x - other.x)**2 + (self.y - other.y)**2)
 
 path_series = []
 
