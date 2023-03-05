@@ -10,6 +10,9 @@ from model import PathNode
 
 road_width = 60
 
+# in dots
+zone_length = 3
+
 subpltcol = 3
 subpltrow = 3
 
