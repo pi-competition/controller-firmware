@@ -67,3 +67,14 @@ def nodeToNodeSearch(n1, n2):
 
 def zoneToZoneSearch(z1, z2):
     return genericBiDj(n1. n2, lambda a, b: a.throughdist/2 + b.throughdist/2, lambda n: list(n.conns))
+
+def findClosestNodeToPos(x, y, graph):
+    mindist = math.inf
+    closest = None
+    for node in list(graph.nodes):
+        dist = math.sqrt((x - node.x)**2 + (y - node.y)**2)
+        if dist < mindist:
+            mindist = dist
+            closest = node
+
+    return closest
