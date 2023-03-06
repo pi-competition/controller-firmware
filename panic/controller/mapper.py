@@ -77,21 +77,12 @@ subpltind += 1
 intersections = []
 intersection_nodes = []
 
-# plt.imshow(cv.cvtColor(yellowed, cv.COLOR_GRAY2RGB))
-# plt.show()
 
 for i in range(1, num_labels):
     specific = (split == i).astype(int)
     intersections.append(specific)
     intersection_nodes.append([])
-    # plt.subplot(subpltrow, subpltcol, subpltind)
-    # plt.imshow(specific) # cv.cvtColor(specific, cv.COLOR_GRAY2RGB))
-    # plt.show()
-    # subpltind += 1
-# for i in intersections:
-    # plt.subplot(subpltrow, subpltcol, subpltind)
-    # plt.imshow(i)
-    # subpltind += 1
+
 
 def imshow_components(labels):
     # Map component labels to hue val
@@ -108,17 +99,9 @@ def imshow_components(labels):
     cv.imshow('labeled.png', labeled_img)
     cv.waitKey()
 
-# imshow_components(labels_im)
-
-# plt.imshow(labels_im)
-# plt.show()
 
 blobs = detector.detect(thresholded)
 print(blobs[0].pt)
-
-# thresholded = cv.cvtColor(thresholded, cv.COLOR_GRAY2BGR)
-
-# im_with_keypoints = cv.drawKeypoints(thresholded, blobs, np.array([]), (0,0,255), cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
 x = []
 y = []
@@ -218,19 +201,6 @@ for point_idx in range(len(points)):
             line_connections.append(r)
 
 
-    # cv.rectangle()
-
-# plt.subplot(subpltrow, subpltcol, subpltind)
-# # plt.scatter(x, y)
-# plt.title("connections 3")
-# for node in nodes.values():
-#     plt.scatter([node.x], [node.y])
-#     for ext in node.conns:
-#         plt.plot([node.x, ext.x], [node.y, ext.y], 'red', linestyle=':')
-#     
-#
-# subpltind += 1
-
 
 finished = False
 done = []
@@ -328,33 +298,6 @@ for series in dot_series:
         if len(s1) != 1:
             s1[-1].add_conn(s1[-2])
             s2[-1].add_conn(s2[-2])
-
-        # if len(s2) != 1:
-            # s2[-1].add_conn(s2[-2])
-
-        """
-        
-
-        a_ = (m**2 - 1)
-        b_ = 2*m*y1 - 2*x1
-        c_ = 2*m*y1*x1 + x1**2 + y1**2 - l**2
-
-        a = a_
-        b = (b_ - 2*a_*x1)
-        c = (c_ + a_*x1**2 - b_*x1)
-
-        print(a, b, c)
-        try:
-            sln_1_x = (-b+math.sqrt(b**2 - 4*a*c))/2*a
-            sln_2_x = (-b-math.sqrt(b**2 - 4*a*c))/2*a
-            sln_1_y = m*(sln_1_x - x1) + y1
-            sln_2_y = m*(sln_2_x - x1) + y1
-
-            plt.scatter([sln_1_x, sln_2_x], [sln_1_y, sln_2_y])
-        except:
-            pass
-
-        """
     path_series.append(s1)
     path_series.append(s2)
 print(yellowed)
@@ -555,96 +498,5 @@ for node in list(all_of_them):
 
 
 
-"""
-plt.subplot(subpltrow, subpltcol, subpltind)
-
-road_dot_series = [[]]
-
-from collections import deque
-
-plt.subplot(subpltrow, subpltcol, subpltind)
-# plt.scatter(x, y)
-plt.title("connections 1")
-for curr in line_connections:
-    p1 = curr.p1
-    p2 = curr.p2
-    plt.plot([p1[0], p2[0]], [p1[1], p2[1]], 'gray', linestyle=':')
-
-subpltind += 1
-
-plt.subplot(subpltrow, subpltcol, subpltind)
-# plt.scatter(x, y)
-# cries in O(n^2)
-plt.title("connections 2")
-conn = deque(line_connections.copy())
-
-road_node_series = [[]]
-# add a dummy to keep the counter happy
-# conn.append(-1)
-currq = deque([conn.popleft()])
-# for point in line_connections:
-finished = False
-while not finished:
-    curr = currq.popleft()
-    road_dot_series[-1].append(curr)
-    p1 = curr.p1
-    p2 = curr.p2
-    plt.plot([p1[0], p2[0]], [p1[1], p2[1]], 'gray', linestyle=':')
-    done = False
-    idx = 0
-    while idx < len(conn):
-        if conn[idx].p1 in [p1, p2] or conn[idx].p2 in [p1, p2]:
-            currq.append(conn[idx])
-            del conn[idx]
-            done = True
-        else:
-            idx += 1
-    # series done, sadge
-    if len(currq) != 0: continue
-    if len(conn) == 0: break
-    road_dot_series.append([])
-    road_node_series.append([])
-    currq.append(conn.popleft())
-
-
-subpltind += 1
-
-plt.subplot(subpltrow, subpltcol, subpltind)
-# plt.scatter(x, y)
-# cries in O(n^2)
-plt.title("connections electric bogaloo")
-conn = deque(line_connections.copy())
-curr = conn.popleft()
-# for point in line_connections:
-colours = ['gray', 'red', 'purple', 'blue', 'green']
-col_idx = 0
-for series in road_dot_series:
-    for point in series:
-        plt.plot([point.p1[0], point.p2[0]], [point.p1[1], point.p2[1]], colours[(col_idx % len(colours))], linestyle=':')
-    col_idx += 1
-
-
-subpltind += 1
-
-"""
-
-"""
-hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
-
-## mask of green (36,0,0) ~ (70, 255,255)
-mask1 = cv.inRange(hsv, (36, 0, 0), (70, 255,255))
-
-## mask o yellow (15,0,0) ~ (36, 255, 255)
-mask2 = cv.inRange(hsv, (15,0,0), (36, 255, 255))
-
-## final mask and masked
-mask = cv.bitwise_or(mask1, mask2)
-target = cv.bitwise_and(img,img, mask=mask)
-"""
-
-# plt.imshow(img, "gray")
-# plt.imshow(thresholded, "gray")
-# res = cv.cvtColor(yellowed, cv.COLOR_GRAY2BGR) # 255-cv.cvtColor(thresholded, cv.COLOR_HSV2BGR)
-# showimg(res, "filtered")
 # showimg(res, "yellowed")
 plt.show()
