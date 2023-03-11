@@ -50,6 +50,7 @@ threading.Timer(60, get_devices).start()
 
 app.run(port=5001, host="0.0.0.0")
 
+print("does this work")
 
 # create a new thread to GET http://127.0.0.1:5000/devices every 1 minute
 

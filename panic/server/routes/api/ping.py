@@ -7,7 +7,7 @@ from server.utils.response import success
 
 DEVICE_INFO = {
     "name": "CONTROL-1",
-    "type": "CONRTOL",
+    "type": "CONTROL",
     "hostname": os.environ["HOSTNAME"] if "HOSTNAME" in os.environ else "unknown",
     "status": "online",
 }
