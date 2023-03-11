@@ -30,13 +30,62 @@ def tellCarWhereItIs(car: Car, pos):
 def tellCarWhereItsGoing(car: Car, node):
     pass
 
+def tellCarItsAngle(car: Car):
+    pass
+
 def carSetsDestination(car: Car, dest: Zone, graph):
     car.dest = Zone
-    car.path = zoneToZoneSearch(car.zone, dest)
+    car.path = zoneToZoneSearch(car.zone, dest)[0]
     graph.place_locks[car] = {}
     for i in range(1, len(car.path)):
         graph.place_locks[car][car.path[i]] = i
 
 def tick(graph, cars):
     for car in cars:
-        car_pos = 
+        car_node = graph.fromPosToClosestNode(car.x, car.y)
+        car_zone = car_node.zone
+        if car_zone != car.zone:
+            print("Car has non-consentually entered a zone")
+            car.zone = car_zone
+
+        # we know where the car is
+        # do we know where the car is going?
+        # yes we do
+        next_zone = car.path[car.path.index(car.zone) + 1]
+        # here comes the awful logic
+        # find the next node we need to visit
+        next_node = car.zone.nodeToNextZone(car_node, next_zone)
+        car.immediate_target = next_node
+
+        # now we issue a correction
+        # TODO: do this logic car-side
+        dx = next_node.x - car.x
+        if dx == 0: dx = 0.0001
+        dy = next_node.y - car.y
+        # pronounced they-ta
+        theta = math.atan(dy/dx)
+        # now, compensate into a bearing
+        if dx < 0:
+            # negi, we work off 3/2 pi (270)
+            # and then add mafs
+            theta = (3/2) * math.pi  - theta
+        else:
+            theta = (1/2) * math.pi - theta
+
+        # we find the next node
+        # there are 2 possibilities
+        # node_idx = None
+        # for i in range(len(car.zone.nodes)):
+        #     if car.zone.nodes[i] == car_node:
+        #         node_idx = i
+        #         break
+        # # if not, oh no
+        # if node_idx is None:
+        #     # oh no
+        #     car.zone = car_node.zone
+        #     for i in range(len(car.zone.nodes)):
+        #         if car.zone.nodes[i] == car_node:
+        #             node_idx = i
+        #             break
+
+
