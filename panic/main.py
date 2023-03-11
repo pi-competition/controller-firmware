@@ -8,6 +8,7 @@ import json
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 api = Api(app)
+app.debug = False
 
 DEVICES = {}
 
@@ -30,7 +31,7 @@ def get_devices():
         if device["ip"] != None:
             try:
                 res = urllib.request.urlopen(f"http://{device['ip']}:5000/api/ping").read()
-                j = json.loads(res.decode("utf-8"))
+                # j = json.loads(res.decode("utf-8"))
                 device["info"] = json.loads(res.decode("utf-8"))
             except:
                 device["status"] = "offline"
@@ -47,8 +48,11 @@ def get_devices():
 
 get_devices()
 threading.Timer(60, get_devices).start()
+def run():
+    app.run(port=5001, host="0.0.0.0", threaded=False)
 
-app.run(port=5001, host="0.0.0.0")
+comms_thread = threading.Thread(target=run)
+comms_thread.start()
 
 print("does this work")
 

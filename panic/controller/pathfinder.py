@@ -39,7 +39,7 @@ def genericBiDj(start, end, distance_fn, child_fn):
             dist_to_next = distance_fn(node, child)
             distances[child] = dist_to_next + current_dist
             to_explore[child] = dist_to_next + current_dist
-            prevs[child] = node
+        prevs[child] = node
             if child in swap[1-swapcounter][0]: # check other distances
                 # bingo
                 join = child

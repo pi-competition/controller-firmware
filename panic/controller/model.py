@@ -1,5 +1,6 @@
 import math
 import pathfinder
+import requests 
 
 class PathNode:
     def __init__(self, x, y, src):
@@ -37,6 +38,13 @@ class Car:
 
     def __hash__(self):
         return self.ip.__hash__()
+
+    def updatePos(self, x, y, angle):
+        requests.post("http://" + self.ip + "/api/updatepos", json={x: x, y: y, angle: angle})
+
+    def updateTarget(self, x, y):
+        requests.post("http://" + self.ip + "/api/updatetarget", json={x: x, y: y})
+
 
 class Graph:
     def __init__(self, nodes):

@@ -10,6 +10,7 @@ numpy = "*"
 setuptools = "*"
 flask = "*"
 flask-restful = "*"
+requests = "*"
 
 [dev-packages]
 

@@ -24,14 +24,11 @@ def carAsksForZoneConsent(car: Car, zone, graph):
         return (False, min_cnt)
     return (True, None)
 
-def tellCarWhereItIs(car: Car, pos):
-    pass
+def tellCarWhereItIs(car: Car, x, y, angle):
+    car.updatePos(x, y, angle)
 
 def tellCarWhereItsGoing(car: Car, node):
-    pass
-
-def tellCarItsAngle(car: Car):
-    pass
+    car.updateTarget(node.x, node.y)
 
 def carSetsDestination(car: Car, dest: Zone, graph):
     car.dest = Zone
