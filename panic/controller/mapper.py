@@ -34,12 +34,15 @@ params = cv.SimpleBlobDetector_Params()
 
 # Change thresholds
 params.minThreshold = 1
-params.maxThreshold = 200
+params.maxThreshold = 500
 
 
 # Filter by Area.
-params.filterByArea = True
+params.filterByArea = False
 params.minArea = 15
+
+params.blobColor = -1
+params.filterByColor = True
 
 # Filter by Circularity
 params.filterByCircularity = False
@@ -163,6 +166,7 @@ def mapFromFilteredImg(img):
     yellowed = (cv.inRange(hsv, (20, 70, 70), (40, 255, 255)))
 
     showimg(cv.cvtColor(img, cv.COLOR_BGR2RGB), "src")
+    showimg(cv.cvtColor(thresholded, cv.COLOR_GRAY2RGB), "thresholded")
 
     num_labels, labels_im = cv.connectedComponents(yellowed)
     print(num_labels)
@@ -315,15 +319,26 @@ def mapFromFilteredImg(img):
     plt.title("connections 4")
     colours = ['red', 'orange', 'green', 'blue', 'purple']
     series_idx = 0
+    path_series = []
     for series in dot_series:
+        if len(series) == 0: continue
+        path_series.append([])
         for i in range(len(series) - 1):
             plt.plot([series[i].x, series[i+1].x], [series[i].y, series[i+1].y], colours[series_idx % len(colours)], linestyle=':')
+        path_series[-1].append(PathNode(series[0].x, series[0].y, series[0]))
+        for i in range(1, len(series)):
+            path_series[-1].append(PathNode(series[i].x, series[i].y, series[i]))
+            path_series[-1][-1].add_conn(path_series[-1][-2])
+
 
         series_idx += 1
 
     subpltind += 1
+    # path_series = [[PathNode(i.x, i.y, i) for i in q] for q in dot_series]
 
 # plt.show()
+
+    """
 
     plt.subplot(subpltrow, subpltcol, subpltind)
     plt.title("screaming")
@@ -384,6 +399,7 @@ def mapFromFilteredImg(img):
         path_series.append(s1)
         path_series.append(s2)
     print(yellowed)
+    """
 
 
     
@@ -459,7 +475,7 @@ def mapFromFilteredImg(img):
         y1 = series[-1].y
         dy = series[-1].y - series[-2].y
         dx = series[-1].x - series[-2].x
-        # if dx == 0: dx = 0.00001
+        if dx == 0: dx = 0.00001
         # if dy == 0: dy = 0.00001
         m = dy/dx
         theta = math.atan(abs(m))
@@ -532,6 +548,7 @@ def mapFromFilteredImg(img):
 # now we link up the intersections
 # go through each
     for nodes in intersection_nodes:
+        """
         if len(nodes) == 0: continue
         # pull the same annoying circular linking trick
         q = deque(nodes[1:])
@@ -552,6 +569,11 @@ def mapFromFilteredImg(img):
                 nodes_linear[inverse_idx].add_conn(mn)
 
             nodes_linear.append(mn)
+        """
+        for node in nodes:
+            for other in nodes:
+                if node != other:
+                    node.add_conn(other)
 
         # for i in range(len(nodes_linear)):
             # nodes_linear[i].add_conn(nodes_linear[(i+1)%len(nodes_linear)])
@@ -570,7 +592,7 @@ def mapFromFilteredImg(img):
     for series in path_series:
         for node in series:
             all_of_them.add(node)
-
+    print(len(all_of_them))
 # plot this garbage
     for node in list(all_of_them):
         for other in node.conns:
