@@ -16,6 +16,8 @@ zone_length = 3
 subpltcol = 3
 subpltrow = 3
 
+mtx = None
+
 subpltind = 1
 def showimg(img, title):
     global subpltind
@@ -51,6 +53,78 @@ params.minConvexity = 0.87
 params.filterByInertia = False
 params.minInertiaRatio = 0.01
 
+ardetector = cv.aruco.ArucoDetector(cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_50))
+
+def fishOutArucoTags(img):
+    global mtx
+    height, width = img.shape[:2]
+    corners, ids, _ = ardetector.detectMarkers(img)
+    if len(corners) != 4:
+        raise Exception(f"Wrong number of aruco tags detected! - I see {len(corners)} tags. there should be 4. what are you actually doing")
+    centers = []
+    idx = 0
+    for tag in corners:
+        avx = 0
+        avy = 0
+        for corner_x, corner_y in tag[0]:
+            avx += corner_x
+            avy += corner_y
+
+        avx /=4
+        avy /=4
+        centers.append((avx, avy, idx))
+        idx += 1
+        plt.scatter([avx],[avy])
+
+    # find closest to each corner
+
+    clone = img.copy()
+    idxes = [0, 0, 0, 0]
+    offsets = [(0, 0), (width, 0), (width, height), (0, height)]
+
+    for i in range(len(idxes)):
+        idx = -1
+        mindist = math.inf
+        for x, y, idx in centers:
+            dist = math.sqrt((x - offsets[i][0])**2 + (y - offsets[i][1])**2)
+            if dist < mindist:
+                idxes[i] = idx
+                mindist = dist
+
+    # neat. now we want the corners furthest from the corner-corners
+    bounding_points = [0, 0, 0, 0]
+    for i in range(len(bounding_points)):
+        maxdist = 0
+        idx = -1
+        for x, y in corners[idxes[i]][0]:
+            cv.line(clone, (round(x), round(y)), offsets[i], (0, 255, 0), 5)
+            dist = math.sqrt((x - offsets[i][0])**2 + (y - offsets[i][1])**2)
+            if dist > maxdist:
+                bounding_points[i] = (round(x), round(y))
+                maxdist = dist
+
+
+
+    # fish_out_these = [3, 0, 3, 3]
+    # for i in range(len(bounding_points)):
+        # bounding_points[i] = [round(i) for i in list(corners[idxes[i]][0][fish_out_these[i]])]
+
+    # and we are done
+    # bada bing bada boom
+    print(bounding_points)
+    for i in range(4):
+        cv.line(clone, bounding_points[i - 1], bounding_points[i], (255, 0, 0), 5)
+
+    showimg(clone, "bounded")
+    # plt.imshow(clone)
+    # plt.show()
+    # print(np.fload32(offsets), np.array(bounding_points))
+    mtx = cv.getPerspectiveTransform(np.float32(bounding_points), np.float32(offsets))
+    warped = cv.warpPerspective(img, mtx, (width, height), flags=cv.INTER_LINEAR)
+    showimg(warped, "warped")
+
+    return warped
+    
 
 
 detector = cv.SimpleBlobDetector_create(params)
@@ -76,6 +150,11 @@ class Node:
         pt.conns.add(self)
 
 def mapFromFilteredImg(img):
+    global subpltind
+    img = fishOutArucoTags(img)
+
+    # plt.imshow(img)
+    # plt.show()
     # img = cv.imread(argv[1])
 # hsv = cv.flip(cv.cvtColor(img, cv.COLOR_BGR2HSV), 0)
     hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
@@ -497,9 +576,14 @@ def mapFromFilteredImg(img):
         for other in node.conns:
             plt.plot([node.x, other.x], [node.y, other.y], 'red', linestyle=':')
 
+    print("here")
+
 
 
 
 
 # showimg(res, "yellowed")
     plt.show()
+
+if __name__ == "__main__":
+    mapFromFilteredImg(cv.imread(argv[-1]))
