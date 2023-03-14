@@ -1,5 +1,5 @@
 import math
-import pathfinder
+from controller import pathfinder
 import requests 
 
 class PathNode:
@@ -10,6 +10,7 @@ class PathNode:
         self.conns = set()
         self.isection_ind = -1
         self.distances = {}
+        self.zone = None
     
     # TODO: make better
     def __hash__(self):
@@ -40,16 +41,20 @@ class Car:
         return self.ip.__hash__()
 
     def updatePos(self, x, y, angle):
+        self.x = x
+        self.y = y
+        self.angle = angle
         requests.post("http://" + self.ip + "/api/updatepos", json={x: x, y: y, angle: angle})
 
-    def updateTarget(self, x, y):
-        requests.post("http://" + self.ip + "/api/updatetarget", json={x: x, y: y})
+    def updateTarget(self, node):
+        self.immediate_target = node
+        requests.post("http://" + self.ip + "/api/updatetarget", json={x: node.x, y: node.y})
 
 
 class Graph:
-    def __init__(self, nodes):
+    def __init__(self, nodes, zones_and_isections):
         self.nodes = set(nodes)
-        self.zones = set()
+        self.zones = set(zones_and_isections)
         self.dependency_graph = {} # thing, reqires_list_free
         self.place_locks = {} # car, {place, countdown}
         # self.current_paths = {} # car, [places]
@@ -74,6 +79,7 @@ class Graph:
 class Zone:
     def __init__(self, nodes):
         self.nodes = nodes
+
         self.throughpath, self.throughdist = pathfinder.nodeToNodeSearch(nodes[0], nodes[-1])
         self.conns = set()
         self.car_within = None
@@ -140,6 +146,8 @@ class Intersection:
         for i in range(len(self.nodes)):
             for other in (self.nodes[:i] + self.nodes[i+1:]):
                 self.dists[(self.nodes[i], other)] = self.nodes[i].dist(other)
+        for node in nodes:
+            node.zone = self
         self.conns = set()
         self.is_free = True
 

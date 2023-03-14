@@ -6,11 +6,18 @@ from api import PANICAPI
 import threading
 import urllib
 import json
+import controller.model
+import controller.camera
+import controller.comms
+import controller.mapper
+from controller.shared import cars
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 api = PANICAPI(app)
 app.debug = False
+
+# cars = {}
 
 DEVICES = {}
 CONFIG = {}
@@ -74,6 +81,25 @@ def get_devices():
             device["info"] = {"name": device["name"], "type": device["type"], "status": "offline"}
     print(DEVICES)
     app.config["DEVICES"] = DEVICES
+    
+    for device in DEVICES:
+        if device["status"] != "offline":
+            if device["id"] not in cars.keys():
+                # new car!
+                print("New car found!")
+                car = model.Car(device["ip"])
+                cars[device["id"]] = car
+    ips = [(device["ip"] if device["status"] != "offline" else None) for device in DEVICES]
+    todel = []
+    for k, car in cars.items():
+        if car.ip not in ips:
+            # uh no
+            print("lost car")
+            todel.append(k)
+    for i in todel:
+        del cars[i]
+        # TODO: beter cleanup, !IMPORTANT
+
 
 
 
@@ -93,6 +119,12 @@ comms_thread.start()
 
 print("does this work")
 
+import cv2
+temp_img = cv2.imread("tagged2.png")
 
-# while True:
-    # for car 
+input("Press enter to take map image")
+graph, nodes, zones, isections = controller.mapper.mapFromFilteredImg(temp_img)
+
+while True:
+    controller.camera.updateCamera()
+    controller.comms.tick(graph, cars)

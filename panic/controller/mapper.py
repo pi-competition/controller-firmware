@@ -5,8 +5,9 @@ from PIL import Image
 import math
 from collections import deque
 from sys import argv
-from model import PathNode
-
+from controller.model import PathNode
+from controller.camera import fishOutArucoTags
+import controller.shared
 
 road_width = 60
 
@@ -16,7 +17,7 @@ zone_length = 3
 subpltcol = 3
 subpltrow = 3
 
-mtx = None
+# mtx = None
 
 subpltind = 1
 def showimg(img, title):
@@ -56,30 +57,16 @@ params.minConvexity = 0.87
 params.filterByInertia = False
 params.minInertiaRatio = 0.01
 
-ardetector = cv.aruco.ArucoDetector(cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_50))
 
-def fishOutArucoTags(img):
-    global mtx
+def clipImageEdges(img):
+    # global mtx
     height, width = img.shape[:2]
-    corners, ids, _ = ardetector.detectMarkers(img)
+
+    corners, ids, centers = fishOutArucoTags(img)
+
     if len(corners) != 4:
         raise Exception(f"Wrong number of aruco tags detected! - I see {len(corners)} tags. there should be 4. what are you actually doing")
-    centers = []
-    idx = 0
-    for tag in corners:
-        avx = 0
-        avy = 0
-        for corner_x, corner_y in tag[0]:
-            avx += corner_x
-            avy += corner_y
 
-        avx /=4
-        avy /=4
-        centers.append((avx, avy, idx))
-        idx += 1
-        plt.scatter([avx],[avy])
-
-    # find closest to each corner
 
     clone = img.copy()
     idxes = [0, 0, 0, 0]
@@ -124,6 +111,8 @@ def fishOutArucoTags(img):
     # print(np.fload32(offsets), np.array(bounding_points))
     mtx = cv.getPerspectiveTransform(np.float32(bounding_points), np.float32(offsets))
     warped = cv.warpPerspective(img, mtx, (width, height), flags=cv.INTER_LINEAR)
+
+    controller.shared.mtx = mtx
     showimg(warped, "warped")
 
     return warped
@@ -154,7 +143,7 @@ class Node:
 
 def mapFromFilteredImg(img):
     global subpltind
-    img = fishOutArucoTags(img)
+    img = clipImageEdges(img)
 
     # plt.imshow(img)
     # plt.show()
@@ -547,6 +536,7 @@ def mapFromFilteredImg(img):
 
 # now we link up the intersections
 # go through each
+    isections = set()
     for nodes in intersection_nodes:
         """
         if len(nodes) == 0: continue
@@ -570,10 +560,13 @@ def mapFromFilteredImg(img):
 
             nodes_linear.append(mn)
         """
+        if len(nodes) == 0: continue
         for node in nodes:
             for other in nodes:
                 if node != other:
                     node.add_conn(other)
+        isection = controller.model.Intersection(nodes)
+        isections.add(isection)
 
         # for i in range(len(nodes_linear)):
             # nodes_linear[i].add_conn(nodes_linear[(i+1)%len(nodes_linear)])
@@ -599,6 +592,34 @@ def mapFromFilteredImg(img):
             plt.plot([node.x, other.x], [node.y, other.y], 'red', linestyle=':')
 
     print("here")
+
+    # now we need to zoning laws
+
+    zones_all = set()
+
+    for series in path_series:
+        zones = []
+        for i in range(len(series)):
+            if i%zone_length == 0:
+                zones.append([])
+            zones[-1].append(series[i])
+        for nodes in zones:
+            if len(nodes) == 0: continue
+            zone = controller.model.Zone(nodes)
+            zones_all.add(zone)
+
+    for zone in list(zones_all):
+        # i am beyond all comprehension
+        for n in zone.nodes[-1].conns:
+            if n.zone != zone: zone.add_conn(n.zone)
+        for n in zone.nodes[0].conns:
+            if n.zone != zone: zone.add_conn(n.zone)
+
+    graph = controller.model.Graph(all_of_them, zones_all.union(isections))
+
+    return (graph, all_of_them, zones_all, isections)
+
+
 
 
 

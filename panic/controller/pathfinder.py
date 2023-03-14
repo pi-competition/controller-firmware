@@ -1,4 +1,4 @@
-from model import *
+from controller.model import *
 from typing import Dict
 import math
 

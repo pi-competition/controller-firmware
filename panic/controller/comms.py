@@ -1,5 +1,5 @@
-from model import *
-from pathfinder import *
+from controller.model import *
+from controller.pathfinder import *
 
 def carArrivesAtZone(car: Car, zone, graph):
     car.zone.car_within = None
@@ -38,7 +38,10 @@ def carSetsDestination(car: Car, dest: Zone, graph):
         graph.place_locks[car][car.path[i]] = i
 
 def tick(graph, cars):
-    for car in cars:
+    for k, car in cars.items():
+        if car.node is None:
+            print("uninitted car", k)
+            continue
         car_node = graph.fromPosToClosestNode(car.x, car.y)
         car_zone = car_node.zone
         if car_zone != car.zone:
