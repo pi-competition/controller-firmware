@@ -48,7 +48,7 @@ class Car:
 
     def updateTarget(self, node):
         self.immediate_target = node
-        requests.post("http://" + self.ip + "/api/updatetarget", json={x: node.x, y: node.y})
+        requests.post("http://" + self.ip + "/api/target", json={x: node.x, y: node.y})
 
 
 class Graph:
