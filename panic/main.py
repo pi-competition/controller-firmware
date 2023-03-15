@@ -67,6 +67,8 @@ from server.routes.ext.tps import Tps
 api.add_resource(Tps, '/ext/tps')
 from server.routes.ext.camimg import CamImg
 api.add_resource(CamImg, '/ext/cam/img')
+from server.routes.ext.cars.summary import CarSummary
+api.add_resource(CarSummary, '/ext/cars/summary')
 
 def get_devices():
     threading.Timer(60, get_devices).start()

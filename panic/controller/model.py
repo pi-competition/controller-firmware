@@ -37,6 +37,9 @@ class Car:
         self.angle = None
         # BEN DO WORK HERE
 
+    def summarise(self):
+        return {"x":int(self.x), "y":int(self.y), "imm_target":{"x": int(self.immediate_target.x), "y":int(self.immediate_target.y)}, "dest":{"x":int(self.dest.x), "y": int(self.dest.y)}}
+
     def __hash__(self):
         return self.ip.__hash__()
 
