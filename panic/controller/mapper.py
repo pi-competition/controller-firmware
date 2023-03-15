@@ -145,6 +145,8 @@ def mapFromFilteredImg(img):
     global subpltind
     img = clipImageEdges(img)
 
+    controller.shared.mapimg = img
+
     # plt.imshow(img)
     # plt.show()
     # img = cv.imread(argv[1])
@@ -615,7 +617,7 @@ def mapFromFilteredImg(img):
         for n in zone.nodes[0].conns:
             if n.zone != zone: zone.add_conn(n.zone)
 
-    graph = controller.model.Graph(all_of_them, zones_all.union(isections))
+    graph = controller.model.Graph(all_of_them, list(zones_all.union(isections)))
 
     return (graph, all_of_them, zones_all, isections)
 

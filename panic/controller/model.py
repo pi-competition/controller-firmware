@@ -55,6 +55,7 @@ class Graph:
     def __init__(self, nodes, zones_and_isections):
         self.nodes = set(nodes)
         self.zones = set(zones_and_isections)
+        print("GRAPH", len(self.zones))
         self.dependency_graph = {} # thing, reqires_list_free
         self.place_locks = {} # car, {place, countdown}
         # self.current_paths = {} # car, [places]
@@ -79,8 +80,11 @@ class Graph:
 class Zone:
     def __init__(self, nodes):
         self.nodes = nodes
+        for node in nodes:
+            node.zone = self
 
-        self.throughpath, self.throughdist = pathfinder.nodeToNodeSearch(nodes[0], nodes[-1])
+        # self.throughpath, self.throughdist = pathfinder.nodeToNodeSearch(nodes[0], nodes[-1])
+        self.throughpath = nodes
         self.conns = set()
         self.car_within = None
 
@@ -107,7 +111,7 @@ class Zone:
 
     def add_conn(self, zn):
         self.conns.add(zn)
-        pn.conns.add(self)
+        zn.conns.add(self)
 
     def nodeToNextZone(self, node, next_zone):
         # this isn't too bad

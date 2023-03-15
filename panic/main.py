@@ -6,11 +6,12 @@ from api import PANICAPI
 import threading
 import urllib
 import json
+import controller
 import controller.model
 import controller.camera
 import controller.comms
 import controller.mapper
-from controller.shared import cars
+from controller import shared
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
@@ -18,6 +19,8 @@ api = PANICAPI(app)
 app.debug = False
 
 # cars = {}
+
+shared.cars = {}
 
 DEVICES = {}
 CONFIG = {}
@@ -56,9 +59,17 @@ from server.routes.api.cars.status import Status
 api.add_resource(Status, '/api/cars/status')
 from server.routes.api.cars.reset_bulk import ResetBulk
 api.add_resource(ResetBulk, '/api/cars/reset-bulk')
-
+from server.routes.ext.mapimg import MapImg
+api.add_resource(MapImg, '/ext/map/img')
+from server.routes.ext.mapdata import MapData
+api.add_resource(MapData, '/ext/map/data')
+from server.routes.ext.tps import Tps
+api.add_resource(Tps, '/ext/tps')
+from server.routes.ext.camimg import CamImg
+api.add_resource(CamImg, '/ext/cam/img')
 
 def get_devices():
+    threading.Timer(60, get_devices).start()
     print("RUNNING")
     global DEVICES
     try:
@@ -88,16 +99,16 @@ def get_devices():
                 # new car!
                 print("New car found!")
                 car = model.Car(device["ip"])
-                cars[device["id"]] = car
+                shared.cars[device["id"]] = car
     ips = [(device["ip"] if device["status"] != "offline" else None) for device in DEVICES]
     todel = []
-    for k, car in cars.items():
+    for k, car in shared.cars.items():
         if car.ip not in ips:
             # uh no
             print("lost car")
             todel.append(k)
     for i in todel:
-        del cars[i]
+        del shared.cars[i]
         # TODO: beter cleanup, !IMPORTANT
 
 
@@ -106,7 +117,7 @@ def get_devices():
 
 
 get_devices()
-threading.Timer(60, get_devices).start()
+# threading.Timer(60, get_devices).start()
 def run():
     app.run(port=5001, host="0.0.0.0", threaded=False)
 
@@ -123,8 +134,28 @@ import cv2
 temp_img = cv2.imread("tagged2.png")
 
 input("Press enter to take map image")
+# mapimg = temp_img
 graph, nodes, zones, isections = controller.mapper.mapFromFilteredImg(temp_img)
+shared.graph = graph
+
+print(type(controller.shared.graph))
+tps = 0
+ticks_per_sec = 0
+def sync_tps():
+    # this is probably a bad idea
+    threading.Timer(5.0, sync_tps).start()
+    global ticks_per_sec
+    global tps
+    tps = ticks_per_sec/5
+    controller.shared.tps = tps
+    ticks_per_sec = 0
+    print("ticks per sec:", tps)
+
+tps_sync = threading.Timer(5.0, sync_tps)
+tps_sync.start()
 
 while True:
+    # print("ticking")
     controller.camera.updateCamera()
-    controller.comms.tick(graph, cars)
+    controller.comms.tick(shared.graph, shared.cars)
+    ticks_per_sec += 1

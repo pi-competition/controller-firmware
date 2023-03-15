@@ -4,8 +4,8 @@ import math
 
 def getMinByKey(dct):
     mini: int = math.inf
-    out: [PathNode | None] = None
-    for (k, v) in dct:
+    out = None
+    for (k, v) in dct.items():
         if v < mini:
             mini = v
             out = k
@@ -13,6 +13,7 @@ def getMinByKey(dct):
     return k
 
 def genericBiDj(start, end, distance_fn, child_fn):
+    print("new search")
     distances_a = {}
     prevs_a = {}
     to_explore_a = {} # node, dist
@@ -30,13 +31,17 @@ def genericBiDj(start, end, distance_fn, child_fn):
 
     join = None
 
-    while len(to_explore_a) + len(to_explore_b) != 0:
+    while (len(to_explore_a) + len(to_explore_b)) != 0:
         distances, prevs, to_explore = swap[swapcounter]
         if len(to_explore) == 0: continue
+        # print(len(to_explore))
+        # print(type(to_explore))
         node = getMinByKey(to_explore)
         current_dist = distances[node]
+        del to_explore[node]
         for child in child_fn(node):
             dist_to_next = distance_fn(node, child)
+            if child in distances.keys(): continue
             distances[child] = dist_to_next + current_dist
             to_explore[child] = dist_to_next + current_dist
             prevs[child] = node

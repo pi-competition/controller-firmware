@@ -42,6 +42,8 @@ def updateCamera():
 
     corners, ids, centers = fishOutArucoTags(img)
 
+    controller.shared.camimg = img
+
     # please save me from what i have created
 
     for x, y, idx in centers:
@@ -63,6 +65,6 @@ def updateCamera():
         theta %= 2*math.pi
 
         # we have ongle! and pos!
-        shared.cars[ids[idx]].updatePos(centers[idx], theta)
+        controller.shared.cars[ids[idx]].updatePos(centers[idx], theta)
 
 
