@@ -174,7 +174,7 @@ def mapFromFilteredImg(img):
 
 
     for i in range(1, num_labels):
-        specific = (split == i).astype(int)
+        specific = (split == i).astype(bool)
         intersections.append(specific)
         intersection_nodes.append([])
 
@@ -403,13 +403,15 @@ def mapFromFilteredImg(img):
         # we BACKtrack along orig_m
         # first, if it's already in an intsect, we need not bother
         if yellowed[round(series[0].y), round(series[0].x)] != 0:
+            series[0].isection_ind = yellowed[round(series[0].y, series[0].x)]
+            intersection_nodes[series[0].isection_ind].append(series[0])
             # find which one
-            for j in range(len(intersections)):
-                if j[series[0].y, series[0].x] != 0:
-                    series[0].isection_ind = j
-                    intersection_nodes[j].append(series[0])
-                    break
-            continue
+            # for j in range(len(intersections)):
+                # if j[series[0].y, series[0].x] != 0:
+                    # series[0].isection_ind = j
+                    # intersection_nodes[j].append(series[0])
+                    # break
+            # continue
 
         x1 = series[0].x
         y1 = series[0].y
@@ -455,12 +457,14 @@ def mapFromFilteredImg(img):
         # TODO: dedup logic
         if yellowed[round(series[-1].y), round(series[-1].x)] != 0:
             # find which one
-            for j in range(len(intersections)):
-                if j[series[-1].y, series[-1].x] != 0:
-                    series[-1].isection_ind = j
-                    intersection_nodes[j].append(series[-1])
-                    break
-            continue
+            series[0].isection_ind = yellowed[round(series[0].y, series[0].x)]
+            intersection_nodes[series[0].isection_ind].append(series[0])
+            # for j in range(len(intersections)):
+            #     if j[series[-1].y, series[-1].x] != 0:
+            #         series[-1].isection_ind = j
+            #         intersection_nodes[j].append(series[-1])
+            #         break
+            # continue
 
         x1 = series[-1].x
         y1 = series[-1].y
