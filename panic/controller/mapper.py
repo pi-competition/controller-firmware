@@ -39,7 +39,7 @@ params.maxThreshold = 500
 
 
 # Filter by Area.
-params.filterByArea = False
+params.filterByArea = True
 params.minArea = 15
 
 params.blobColor = -1
@@ -153,7 +153,7 @@ def mapFromFilteredImg(img):
 # hsv = cv.flip(cv.cvtColor(img, cv.COLOR_BGR2HSV), 0)
     hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
 # img = Image.fromarray(np.uint8(img))
-    thresholded = cv.bitwise_not(cv.inRange(hsv, (0, 0, 100), (255, 30, 255)))
+    thresholded = cv.bitwise_not(cv.inRange(hsv, (0, 0, 70), (255, 60, 255)))
     yellowed = (cv.inRange(hsv, (20, 70, 70), (40, 255, 255)))
 
     showimg(cv.cvtColor(img, cv.COLOR_BGR2RGB), "src")
