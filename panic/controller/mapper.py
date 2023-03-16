@@ -299,6 +299,8 @@ def mapFromFilteredImg(img):
             done.append(nxt)
             if len(nxt.conns) == 1: break
             if list(nxt.conns)[0] == last:
+                # ugly fix help me
+                if last in done: break
                 last = nxt
                 nxt = list(nxt.conns)[1]
             else:
