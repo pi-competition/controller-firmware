@@ -7,12 +7,15 @@ import controller.shared
 
 # mtx = None
 
-
-ardetector = cv.aruco.ArucoDetector(cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_50))
+if cv.__version__[0] == "4": #on the pi
+    artagger = cv.aruco.ArucoDetector(cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_50))
+    ardetector = lambda img: artagger.detectMarkers(img)
+else:
+    ardetector = lambda img: cv.aruco.detectMarkers(img)
 
 def fishOutArucoTags(img):
 
-    corners, ids, _ = ardetector.detectMarkers(img)
+    corners, ids, _ = ardetector(img)
     centers = []
     idx = 0
     for tag in corners:
