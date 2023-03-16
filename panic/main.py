@@ -143,8 +143,8 @@ input("Press enter to take map image")
 # mapimg = temp_img
 temp_img = camera.swapAndGetImage()
 from matplotlib import pyplot as plt
-plt.imshow(temp_img)
-if not "noplot" in argv: plt.show()
+# plt.imshow(temp_img)
+# if not "noplot" in argv: plt.show()
 # if "y" == input("is this your picture?"): break
 graph, nodes, zones, isections = controller.mapper.mapFromFilteredImg(temp_img)
 shared.graph = graph

@@ -498,13 +498,14 @@ def mapFromFilteredImg(img):
 
         # now we have to find which one
         inode = None
-        for j in range(len(intersections)):
-            if intersections[j][round(y1 + yv), round(x1 + xv)] != 0:
-                inode = PathNode(x1 + round(xv), y1 + round(yv), series[i])
-                inode.isection_ind = j
-                inode.add_conn(series[-1])
-                intersection_nodes[j].append(inode)
-                break
+        j = yellowed[round(y1 + yv), round(x1 + xv)]
+        # for j in range(len(intersections)):
+            # if intersections[j][round(y1 + yv), round(x1 + xv)] != 0:
+        inode = PathNode(x1 + round(xv), y1 + round(yv), series[i])
+        inode.isection_ind = j
+        inode.add_conn(series[-1])
+        intersection_nodes[j].append(inode)
+        # break
 
         if inode != None:
             series.append(inode)
