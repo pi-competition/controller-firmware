@@ -61,7 +61,7 @@ def updateCamera():
         print("THERES A CAR YO")
         print("at", x, y, "and id is", ids[idx])
         print(corners[idx], corners[idx][0])
-        tl_x, tl_y = corners[idx][0]
+        tl_x, tl_y = corners[idx][0][0]
 
         dy = tl_y - y
         dx = tl_x - x
@@ -79,8 +79,8 @@ def updateCamera():
         theta %= 2*math.pi
 
         # we have ongle! and pos!
-        if ids[idx] in controller.shared.cars:
-            controller.shared.cars[ids[idx]].updatePos(centers[idx], theta)
+        if ids[idx][0] in controller.shared.cars:
+            controller.shared.cars[ids[idx][0]].updatePos(centers[idx], theta)
         else:
             print("its not connected :(")
 
