@@ -7,11 +7,12 @@ import controller.shared
 
 # mtx = None
 
-if cv.__version__[0] == "4": #on the pi
-    artagger = cv.aruco.ArucoDetector(cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_50))
+dic = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_50)
+try:
+    artagger = cv.aruco.ArucoDetector(dic)
     ardetector = lambda img: artagger.detectMarkers(img)
-else:
-    ardetector = lambda img: cv.aruco.detectMarkers(img)
+except:
+    ardetector = lambda img: cv.aruco.detectMarkers(img, dic)
 
 def fishOutArucoTags(img):
 
