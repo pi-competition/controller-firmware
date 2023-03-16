@@ -7,9 +7,9 @@ import controller.shared
 
 # mtx = None
 
-from picamera2 import PiCamera2
+from picamera2 import Picamera2
 
-cam = PiCamera2()
+cam = Picamera2()
 cam.configure(cam.create_still_configuration())
 p.start()
 
