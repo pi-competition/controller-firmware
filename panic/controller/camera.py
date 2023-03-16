@@ -53,11 +53,13 @@ def updateCamera():
 
     corners, ids, centers = fishOutArucoTags(img)
 
-    controller.shared.camimg = img
+    controller.shared.camimg = cv.aruco.drawDetectedMarkers(img, corners, ids)
 
     # please save me from what i have created
 
     for x, y, idx in centers:
+        print("THERES A CAR YO")
+        print("at", x, y, "and id is", ids[idx])
         tl_x, tl_y = corners[idx][0]
 
         dy = tl_y - y
