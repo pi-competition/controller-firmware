@@ -49,7 +49,7 @@ def updateCamera():
         # print("CAMERA BORKED")
         # return False
     height, width = img.shape[:2]
-    img = cv.warpPerspective(img, controller.shared.mtx, (width, height), flags=cv.INTER_LINEAR)
+    #img = cv.warpPerspective(img, controller.shared.mtx, (width, height), flags=cv.INTER_LINEAR)
 
     corners, ids, centers = fishOutArucoTags(img)
 
@@ -60,6 +60,7 @@ def updateCamera():
     for x, y, idx in centers:
         print("THERES A CAR YO")
         print("at", x, y, "and id is", ids[idx])
+        print(corners[idx], corners[idx][0])
         tl_x, tl_y = corners[idx][0]
 
         dy = tl_y - y
