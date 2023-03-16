@@ -1,5 +1,5 @@
 # from controller.mapper import mtx, fishOutArucoTags
-import controller.utils.bufferless as bufferless
+# import controller.utils.bufferless as bufferless
 import cv2 as cv
 import math
 # import main
@@ -7,11 +7,13 @@ import controller.shared
 
 # mtx = None
 
-from picamera2 import Picamera2
+from picamera2 import Picamera2, Preview
 
 cam = Picamera2()
-cam.configure(cam.create_still_configuration())
-cam.start()
+sc = cam.create_still_configuration()
+cam.configure(sc)
+cam.configure(cam.create_preview_configuration())
+# cam.start()
 
 dic = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_50)
 try:
@@ -19,6 +21,18 @@ try:
     ardetector = lambda img: artagger.detectMarkers(img)
 except:
     ardetector = lambda img: cv.aruco.detectMarkers(img, dic)
+
+def previewToTakePicSetup():
+    cam.start_preview(Preview.QTGL)
+    cam.start()
+
+def swapAndGetImage():
+    cam.stop_preview()
+    cam.stop()
+    cam.configure(sc)
+    cam.start()
+    q = cam.capture_array()
+    return cv.cvtColor(q, cv.COLOR_RGB2BGR)
 
 def fishOutArucoTags(img):
 
@@ -40,7 +54,7 @@ def fishOutArucoTags(img):
 
     return (corners, ids, centers)
 
-camera = bufferless.BufferlessVideoCapture(0)
+# camera = bufferless.BufferlessVideoCapture(0)
 
 def updateCamera():
     # img = camera.read()

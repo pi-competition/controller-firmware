@@ -278,7 +278,7 @@ def mapFromFilteredImg(img):
             if not r.is_already_in(line_connections):
                 line_connections.append(r)
 
-
+    plt.show()
 
     finished = False
     done = []
@@ -618,6 +618,7 @@ def mapFromFilteredImg(img):
             if n.zone != zone: zone.add_conn(n.zone)
 
     graph = controller.model.Graph(all_of_them, list(zones_all.union(isections)))
+    if not "noplot" in argv: plt.show()
 
     return (graph, all_of_them, zones_all, isections)
 
@@ -628,7 +629,6 @@ def mapFromFilteredImg(img):
 
 
 # showimg(res, "yellowed")
-    plt.show()
 
 if __name__ == "__main__":
     mapFromFilteredImg(cv.imread(argv[-1]))
