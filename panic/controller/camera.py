@@ -7,6 +7,12 @@ import controller.shared
 
 # mtx = None
 
+from picamera2 import PiCamera2
+
+cam = PiCamera2()
+cam.configure(cam.create_still_configuration())
+p.start()
+
 dic = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_50)
 try:
     artagger = cv.aruco.ArucoDetector(dic)
@@ -37,7 +43,8 @@ def fishOutArucoTags(img):
 camera = bufferless.BufferlessVideoCapture(0)
 
 def updateCamera():
-    img = camera.read()
+    # img = camera.read()
+    img = cv.cvtColor(p.capture_array(), cv.COLOR_RGB2BGR)
     # if not q:
         # print("CAMERA BORKED")
         # return False
