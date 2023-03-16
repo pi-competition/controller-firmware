@@ -11,7 +11,7 @@ from picamera2 import Picamera2
 
 cam = Picamera2()
 cam.configure(cam.create_still_configuration())
-p.start()
+cam.start()
 
 dic = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_50)
 try:
@@ -44,7 +44,7 @@ camera = bufferless.BufferlessVideoCapture(0)
 
 def updateCamera():
     # img = camera.read()
-    img = cv.cvtColor(p.capture_array(), cv.COLOR_RGB2BGR)
+    img = cv.cvtColor(cam.capture_array(), cv.COLOR_RGB2BGR)
     # if not q:
         # print("CAMERA BORKED")
         # return False
