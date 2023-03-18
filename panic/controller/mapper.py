@@ -174,23 +174,28 @@ def mapFromFilteredImg(img):
     showimg(cv.cvtColor(img, cv.COLOR_BGR2RGB), "src")
     showimg(cv.cvtColor(thresholded, cv.COLOR_GRAY2RGB), "thresholded")
 
-    num_labels, labels_im = cv.connectedComponents(yellowed, ltype=cv.CV_32S)
-    intsecblobs = detector2.detect(np.array(labels_im).astype(np.int8))
-    colours = []
+    element = cv2.getStructuringElement(cv2.MORPH_RECT, (2,2))
+    mask = cv2.erode(yellowed, element, iterations = 1)
+    mask = cv2.dilate(mask, element, iterations = 1)
+    yellowed = cv2.erode(mask, element)
 
-    for i in intsecblobs:
-        colours.append(labels_im[i.pt])
-
-    for i in range(1, num_labels + 1):
-        if i in colours:
-            pass
-        else:
-            labels_im[labels_im == i] = 0
-
-    for i in colours:
-        labels_im[labels_im == i] = colours.index(i)
-
-    num_labels = len(colours)
+    num_labels, labels_im = cv.connectedComponents(yellowed)
+#     intsecblobs = detector2.detect(np.array(labels_im).astype(np.int8))
+#     colours = []
+# #
+#     for i in intsecblobs:
+#         colours.append(labels_im[i.pt])
+#
+#     for i in range(1, num_labels + 1):
+#         if i in colours:
+#             pass
+#         else:
+#             labels_im[labels_im == i] = 0
+#
+#     for i in colours:
+#         labels_im[labels_im == i] = colours.index(i)
+#
+#     num_labels = len(colours)
 
     print(num_labels)
     split = np.array(labels_im)
