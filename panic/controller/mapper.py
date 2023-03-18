@@ -65,6 +65,9 @@ def clipImageEdges(img):
     corners, ids, centers = fishOutArucoTags(img)
 
     if len(corners) != 4:
+        img = cv.aruco.drawDetectedMarkers(img, corners);
+        plt.imshow(img)
+        plt.show()
         raise Exception(f"Wrong number of aruco tags detected! - I see {len(corners)} tags. there should be 4. what are you actually doing")
 
 
