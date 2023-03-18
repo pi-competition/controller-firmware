@@ -174,10 +174,10 @@ def mapFromFilteredImg(img):
     showimg(cv.cvtColor(img, cv.COLOR_BGR2RGB), "src")
     showimg(cv.cvtColor(thresholded, cv.COLOR_GRAY2RGB), "thresholded")
 
-    element = cv2.getStructuringElement(cv2.MORPH_RECT, (2,2))
-    mask = cv2.erode(yellowed, element, iterations = 1)
-    mask = cv2.dilate(mask, element, iterations = 1)
-    yellowed = cv2.erode(mask, element)
+    element = cv.getStructuringElement(cv2.MORPH_RECT, (2,2))
+    mask = cv.erode(yellowed, element, iterations = 1)
+    mask = cv.dilate(mask, element, iterations = 1)
+    yellowed = cv.erode(mask, element)
 
     num_labels, labels_im = cv.connectedComponents(yellowed)
 #     intsecblobs = detector2.detect(np.array(labels_im).astype(np.int8))
