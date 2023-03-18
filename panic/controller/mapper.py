@@ -40,7 +40,7 @@ params.maxThreshold = 500
 
 # Filter by Area.
 params.filterByArea = True
-params.minArea = 15
+params.minArea = 40
 
 params.blobColor = -1
 params.filterByColor = True
@@ -124,6 +124,11 @@ def clipImageEdges(img):
 
 
 detector = cv.SimpleBlobDetector_create(params)
+
+params.filterByArea = True
+
+detector2 = cv.SimpleBlobDetector_create(params)
+
 def sign(n):
     return round(n/abs(n))
 class Conn:
@@ -157,19 +162,36 @@ def mapFromFilteredImg(img):
 # hsv = cv.flip(cv.cvtColor(img, cv.COLOR_BGR2HSV), 0)
     hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
 # img = Image.fromarray(np.uint8(img))
-    sensitivity = 30
+    sensitivity = 80
     lower_white = np.array([0,0,0])
-    upper_white = np.array([360,255,sensitivity])
+    upper_white = np.array([255,255,sensitivity])
     thresholded = cv.bitwise_not(cv.inRange(hsv, lower_white, upper_white))
     plt.imshow(thresholded); plt.show()
-    lower_blue = np.array([110,50,50])
-    upper_blue = np.array([130,255,255])
+    lower_blue = np.array([100,50,50])
+    upper_blue = np.array([120,255,255])
     yellowed = (cv.inRange(hsv, lower_blue, upper_blue))
 
     showimg(cv.cvtColor(img, cv.COLOR_BGR2RGB), "src")
     showimg(cv.cvtColor(thresholded, cv.COLOR_GRAY2RGB), "thresholded")
 
     num_labels, labels_im = cv.connectedComponents(yellowed)
+    intsecblobs = detector2.detect(labels_im)
+    colours = []
+
+    for i in intsecblobs:
+        colours.append(labels_im[i.pt])
+
+    for i in range(1, num_labels + 1):
+        if i in colours:
+            pass
+        else:
+            labels_im[labels_im == i] = 0
+
+    for i in colours:
+        labels_im[labels_im == i] = colours.index(i)
+
+    num_labels = len(colours)
+
     print(num_labels)
     split = np.array(labels_im)
 
@@ -183,11 +205,11 @@ def mapFromFilteredImg(img):
     intersection_nodes = []
 
 
-    for i in range(1, num_labels):
-        specific = (split == i).astype(bool)
-        intersections.append(specific)
-        intersection_nodes.append([])
-
+    # for i in range(1, num_labels):
+    #     specific = (split == i).astype(bool)
+    #     intersections.append(specific)
+    #     intersection_nodes.append([])
+    #
 
     # def imshow_components(labels):
     #     # Map component labels to hue val
