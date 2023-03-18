@@ -154,11 +154,13 @@ def mapFromFilteredImg(img):
     hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
 # img = Image.fromarray(np.uint8(img))
     sensitivity = 30
-    lower_white = np.array([0,0,255-sensitivity])
-    upper_white = np.array([255,sensitivity,255])
+    lower_white = np.array([0,0,0])
+    upper_white = np.array([360,255,sensitivity])
     thresholded = cv.bitwise_not(cv.inRange(hsv, lower_white, upper_white))
     plt.imshow(thresholded); plt.show()
-    yellowed = (cv.inRange(hsv, (20, 70, 70), (40, 255, 255)))
+    lower_blue = np.array([110,50,50])
+    upper_blue = np.array([130,255,255])
+    yellowed = (cv.inRange(hsv, lower_blue, upper_blue))
 
     showimg(cv.cvtColor(img, cv.COLOR_BGR2RGB), "src")
     showimg(cv.cvtColor(thresholded, cv.COLOR_GRAY2RGB), "thresholded")
