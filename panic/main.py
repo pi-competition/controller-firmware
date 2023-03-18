@@ -137,15 +137,16 @@ import cv2
 # temp_img = cv2.imread("tagged2.png")
 
 from controller import camera
-camera.previewToTakePicSetup()
-
-input("Press enter to take map image")
+# camera.previewToTakePicSetup()
+while True:
+    input("Press enter to take map image")
 # mapimg = temp_img
-temp_img = camera.swapAndGetImage()
-from matplotlib import pyplot as plt
-# plt.imshow(temp_img)
+    temp_img = camera.getImage()
+    from matplotlib import pyplot as plt
+    plt.imshow(temp_img)
+    plt.show()
 # if not "noplot" in argv: plt.show()
-# if "y" == input("is this your picture?"): break
+    if "y" == input("is this your picture?"): break
 graph, nodes, zones, isections = controller.mapper.mapFromFilteredImg(temp_img)
 shared.graph = graph
 
