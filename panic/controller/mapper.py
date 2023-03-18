@@ -174,7 +174,7 @@ def mapFromFilteredImg(img):
     showimg(cv.cvtColor(img, cv.COLOR_BGR2RGB), "src")
     showimg(cv.cvtColor(thresholded, cv.COLOR_GRAY2RGB), "thresholded")
 
-    element = cv.getStructuringElement(cv2.MORPH_RECT, (2,2))
+    element = cv.getStructuringElement(cv.MORPH_RECT, (2,2))
     mask = cv.erode(yellowed, element, iterations = 1)
     mask = cv.dilate(mask, element, iterations = 1)
     yellowed = cv.erode(mask, element)
