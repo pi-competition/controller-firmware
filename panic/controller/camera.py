@@ -15,7 +15,7 @@ import controller.shared
 # cam.configure(cam.create_preview_configuration())
 # cam.start()
 
-# dic = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_50)
+dic = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_50)
 
 v = bufferless.BufferlessVideoCapture(0)
 try:
