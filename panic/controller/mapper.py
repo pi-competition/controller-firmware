@@ -174,7 +174,7 @@ def mapFromFilteredImg(img):
     showimg(cv.cvtColor(img, cv.COLOR_BGR2RGB), "src")
     showimg(cv.cvtColor(thresholded, cv.COLOR_GRAY2RGB), "thresholded")
 
-    num_labels, labels_im = cv.connectedComponents(yellowed)
+    num_labels, labels_im = cv.connectedComponents(yellowed, ltype=cv.CV_32S)
     intsecblobs = detector2.detect(np.array(labels_im).astype(np.int8))
     colours = []
 
