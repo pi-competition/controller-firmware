@@ -13,4 +13,8 @@ this bad code brought to you by Abbas. direct all complaints to your nearest wal
 sort out the venv or whatever idk how it works
 source something in the bin
   
-then `python3 src/main.py <path_to_ur_image>`
+then `python3 src/main.py`  
+wait a bit, it'll prompt for press enter for to take a map image then present the image.  
+if you're satisfied close the popup and reply y, else reply n.  
+It then does some maths magic and shows some more (mostly diagnostic but pretty cool) popups, which should be closed.
+Then it'll just do car stuff.
