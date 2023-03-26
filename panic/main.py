@@ -13,7 +13,7 @@ import controller.camera
 import controller.comms
 import controller.mapper
 from controller import shared
-
+from controller import model
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 api = PANICAPI(app)
@@ -87,9 +87,10 @@ def get_devices():
     for device in DEVICES:
         if device["ip"] != None:
             try:
-                res = urllib.request.urlopen(f"http://{device['ip']}:5000/api/ping").read()
+                res = urllib.request.urlopen(f"http://{device['ip']}:5001/api/ping").read()
                 # j = json.loads(res.decode("utf-8"))
-                device["info"] = json.loads(res.decode("utf-8"))
+                device["info"] = json.loads(res.decode("utf-8"))["data"]
+                device["status"] = device["info"]["status"]
             except:
                 device["status"] = "offline"
                 device["info"] = {"name": device["name"], "type": device["type"], "status": "offline"}
@@ -100,12 +101,13 @@ def get_devices():
     app.config["DEVICES"] = DEVICES
     
     for device in DEVICES:
+        print(device)
         if device["status"] != "offline":
-            if device["id"] not in cars.keys():
+            if device["info"]["id"] not in shared.cars.keys():
                 # new car!
                 print("New car found!")
                 car = model.Car(device["ip"])
-                shared.cars[device["id"]] = car
+                shared.cars[device["info"]["id"]] = car
     ips = [(device["ip"] if device["status"] != "offline" else None) for device in DEVICES]
     todel = []
     for k, car in shared.cars.items():

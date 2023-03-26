@@ -54,6 +54,7 @@ def genericBiDj(start, end, distance_fn, child_fn):
     # distance summation
     total_dist = distances_a[join] + distances_b[join]
     # path unravelling
+    print("done search")
     path = []
     current = join
     while current != start:
@@ -71,7 +72,7 @@ def nodeToNodeSearch(n1, n2):
     return genericBiDj(n1, n2, lambda a, b: a.dist(b), lambda n: list(n.conns))
 
 def zoneToZoneSearch(z1, z2):
-    return genericBiDj(n1. n2, lambda a, b: a.throughdist/2 + b.throughdist/2, lambda n: list(n.conns))
+    return genericBiDj(z1, z2, lambda a, b: a.throughdist/2 + b.throughdist/2, lambda n: list(n.conns))
 
 def findClosestNodeToPos(x, y, graph):
     mindist = math.inf

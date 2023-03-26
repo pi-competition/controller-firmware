@@ -99,7 +99,7 @@ def updateCamera():
 
         # we have ongle! and pos!
         if ids[idx][0] in controller.shared.cars:
-            controller.shared.cars[ids[idx][0]].updatePos(centers[idx], theta)
+            controller.shared.cars[ids[idx][0]].updatePos(centers[idx][0], centers[idx][1], theta)
         else:
             print("its not connected :(")
 
