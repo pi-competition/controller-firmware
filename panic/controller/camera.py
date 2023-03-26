@@ -62,13 +62,13 @@ def fishOutArucoTags(img):
 # camera = bufferless.BufferlessVideoCapture(0)
 
 def updateCamera():
-    # img = camera.read()
-    img = cv.cvtColor(cam.capture_array(), cv.COLOR_RGB2BGR)
+    img = v.read()
+    # img = cv.cvtColor(cam.capture_array(), cv.COLOR_RGB2BGR)
     # if not q:
         # print("CAMERA BORKED")
         # return False
     height, width = img.shape[:2]
-    #img = cv.warpPerspective(img, controller.shared.mtx, (width, height), flags=cv.INTER_LINEAR)
+    img = cv.warpPerspective(img, controller.shared.mtx, (width, height), flags=cv.INTER_LINEAR)
 
     corners, ids, centers = fishOutArucoTags(img)
 
