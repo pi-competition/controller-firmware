@@ -162,10 +162,13 @@ def mapFromFilteredImg(img):
 # hsv = cv.flip(cv.cvtColor(img, cv.COLOR_BGR2HSV), 0)
     hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
 # img = Image.fromarray(np.uint8(img))
-    sensitivity = 80
+    sensitivity = 120
+    element = cv.getStructuringElement(cv.MORPH_RECT, (2,2))
     lower_white = np.array([0,0,0])
     upper_white = np.array([255,255,sensitivity])
     thresholded = cv.bitwise_not(cv.inRange(hsv, lower_white, upper_white))
+    iters = 4
+    thresholded = cv.erode(cv.dilate(thresholded, element, iterations=iters), element, iterations=iters)
     plt.imshow(thresholded); plt.show()
     lower_blue = np.array([100,50,50])
     upper_blue = np.array([120,255,255])
@@ -174,7 +177,6 @@ def mapFromFilteredImg(img):
     showimg(cv.cvtColor(img, cv.COLOR_BGR2RGB), "src")
     showimg(cv.cvtColor(thresholded, cv.COLOR_GRAY2RGB), "thresholded")
 
-    element = cv.getStructuringElement(cv.MORPH_RECT, (2,2))
     mask = cv.erode(yellowed, element, iterations = 1)
     mask = cv.dilate(mask, element, iterations = 1)
     yellowed = cv.erode(mask, element)

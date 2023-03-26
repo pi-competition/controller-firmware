@@ -26,9 +26,12 @@ shared.cars = {}
 DEVICES = {}
 CONFIG = {}
 app.config["DEVICES"] = DEVICES
+
+"""
 with open("config.json") as f:
     CONFIG = json.loads(f.read())
     app.config["CONFIG"] = CONFIG
+"""
 
 @app.errorhandler(404)
 def page_not_found(e):
