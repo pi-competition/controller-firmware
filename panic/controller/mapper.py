@@ -162,10 +162,13 @@ def mapFromFilteredImg(img):
 # hsv = cv.flip(cv.cvtColor(img, cv.COLOR_BGR2HSV), 0)
     hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
 # img = Image.fromarray(np.uint8(img))
-    sensitivity = 80
+    sensitivity = 120
+    element = cv.getStructuringElement(cv.MORPH_RECT, (2,2))
     lower_white = np.array([0,0,0])
     upper_white = np.array([255,255,sensitivity])
     thresholded = cv.bitwise_not(cv.inRange(hsv, lower_white, upper_white))
+    iters = 8
+    thresholded = cv.erode(cv.dilate(thresholded, element, iterations=iters), element, iterations=iters)
     plt.imshow(thresholded); plt.show()
     lower_blue = np.array([100,50,50])
     upper_blue = np.array([120,255,255])
@@ -174,9 +177,8 @@ def mapFromFilteredImg(img):
     showimg(cv.cvtColor(img, cv.COLOR_BGR2RGB), "src")
     showimg(cv.cvtColor(thresholded, cv.COLOR_GRAY2RGB), "thresholded")
 
-    element = cv.getStructuringElement(cv.MORPH_RECT, (2,2))
-    mask = cv.erode(yellowed, element, iterations = 1)
-    mask = cv.dilate(mask, element, iterations = 1)
+    mask = cv.erode(yellowed, element, iterations = 4)
+    mask = cv.dilate(mask, element, iterations = 4)
     yellowed = cv.erode(mask, element)
 
     num_labels, labels_im = cv.connectedComponents(yellowed)
@@ -315,6 +317,19 @@ def mapFromFilteredImg(img):
             if not r.is_already_in(line_connections):
                 line_connections.append(r)
 
+    for node in nodes.values():
+        for o in list(node.conns):
+            plt.plot([node.x, o.x], [node.y, o.y], 'gray', linestyle=':')
+    count = 0
+    for node in nodes.values():
+        if len(node.conns) != 1: count += 1
+    print("sjksdkjsdf")
+    print(count)
+    for (k,v) in nodes.items():
+        print(k)
+        print(v)
+        # print(v.con9c83c868ns)
+
     plt.show()
 
     finished = False
@@ -326,18 +341,20 @@ def mapFromFilteredImg(img):
         for v in nodes.values():
             if v not in done and len(v.conns) == 1:
                 start = v
+                break
         if start is None: break
         dot_series[-1].append(start)
         last = start
         done.append(start)
         nxt = list(start.conns)[0]
         while True:
+            print(nxt)
             dot_series[-1].append(nxt)
             done.append(nxt)
             if len(nxt.conns) == 1: break
-            if list(nxt.conns)[0] == last:
+            if list(nxt.conns)[0] in done:
                 # ugly fix help me
-                if last in done: break
+                # if list(nxt.conns)[1] in done: break
                 last = nxt
                 nxt = list(nxt.conns)[1]
             else:
@@ -349,6 +366,7 @@ def mapFromFilteredImg(img):
     plt.title("connections 4")
     colours = ['red', 'orange', 'green', 'blue', 'purple']
     series_idx = 0
+    print(len(dot_series), dot_series)
     path_series = []
     for series in dot_series:
         if len(series) == 0: continue
@@ -431,8 +449,13 @@ def mapFromFilteredImg(img):
     print(yellowed)
     """
 
+    showimg(yellowed, "yella")
+    plt.show()
 
-    
+    intersection_nodes = [[]]
+    intersection_nodes = [[]]
+
+    isnodes = []
 
 # add inodes
     for series in path_series:
@@ -536,12 +559,13 @@ def mapFromFilteredImg(img):
         # now we have to find which one
         inode = None
         j = yellowed[round(y1 + yv), round(x1 + xv)]
+        print(j)
         # for j in range(len(intersections)):
             # if intersections[j][round(y1 + yv), round(x1 + xv)] != 0:
         inode = PathNode(x1 + round(xv), y1 + round(yv), series[i])
-        inode.isection_ind = j
+        inode.isection_ind = 0
         inode.add_conn(series[-1])
-        intersection_nodes[j].append(inode)
+        isnodes.append(inode)
         # break
 
         if inode != None:
@@ -583,7 +607,7 @@ def mapFromFilteredImg(img):
 # now we link up the intersections
 # go through each
     isections = set()
-    for nodes in intersection_nodes:
+    for nodes in [isnodes]: # intersection_nodes:
         """
         if len(nodes) == 0: continue
         # pull the same annoying circular linking trick

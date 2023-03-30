@@ -62,13 +62,13 @@ def fishOutArucoTags(img):
 # camera = bufferless.BufferlessVideoCapture(0)
 
 def updateCamera():
-    # img = camera.read()
-    img = cv.cvtColor(cam.capture_array(), cv.COLOR_RGB2BGR)
+    img = v.read()
+    # img = cv.cvtColor(cam.capture_array(), cv.COLOR_RGB2BGR)
     # if not q:
         # print("CAMERA BORKED")
         # return False
     height, width = img.shape[:2]
-    #img = cv.warpPerspective(img, controller.shared.mtx, (width, height), flags=cv.INTER_LINEAR)
+    img = cv.warpPerspective(img, controller.shared.mtx, (width, height), flags=cv.INTER_LINEAR)
 
     corners, ids, centers = fishOutArucoTags(img)
 
@@ -99,7 +99,7 @@ def updateCamera():
 
         # we have ongle! and pos!
         if ids[idx][0] in controller.shared.cars:
-            controller.shared.cars[ids[idx][0]].updatePos(centers[idx], theta)
+            controller.shared.cars[ids[idx][0]].updatePos(centers[idx][0], centers[idx][1], theta)
         else:
             print("its not connected :(")
 

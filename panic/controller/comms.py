@@ -39,8 +39,8 @@ def carSetsDestination(car: Car, dest: Zone, graph):
 
 def tick(graph, cars):
     for k, car in cars.items():
-        if car.node is None:
-            print("uninitted car", k)
+        if car.x is None:
+            print("uninitted car", k, car)
             continue
         car_node = graph.fromPosToClosestNode(car.x, car.y)
         car_zone = car_node.zone
@@ -51,11 +51,14 @@ def tick(graph, cars):
         # we know where the car is
         # do we know where the car is going?
         # yes we do
+        if car.path is None:
+            carSetsDestination(car, list(graph.zones)[-1], graph)
         next_zone = car.path[car.path.index(car.zone) + 1]
         # here comes the awful logic
         # find the next node we need to visit
-        next_node = car.zone.nodeToNextZone(car_node, next_zone)
+        next_node = car.zone.nodeToNextZone(car_node, next_zone)[0]
         car.immediate_target = next_node
+        car.updateTarget(next_node)
 
         # now we issue a correction
         # TODO: do this logic car-side
@@ -72,6 +75,7 @@ def tick(graph, cars):
         else:
             theta = (1/2) * math.pi - theta
 
+        
         # we find the next node
         # there are 2 possibilities
         # node_idx = None

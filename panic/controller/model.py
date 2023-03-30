@@ -27,13 +27,14 @@ class PathNode:
         return math.sqrt((self.x - other.x)**2 + (self.y - other.y)**2)
 
 class Car:
-    def __init__(ip):
+    def __init__(self, ip):
         self.ip = ip
         self.zone = None
         self.dest = None
         self.immediate_target = None
         self.x = None
         self.y = None
+        self.path = None
         self.angle = None
         # BEN DO WORK HERE
 
@@ -47,11 +48,11 @@ class Car:
         self.x = x
         self.y = y
         self.angle = angle
-        requests.post("http://" + self.ip + "/api/updatepos", json={x: x, y: y, angle: angle})
+        requests.post("http://" + self.ip + ":5001/api/updatepos", json={"x": int(x), "y": int(y), "angle": int(angle)})
 
     def updateTarget(self, node):
         self.immediate_target = node
-        requests.post("http://" + self.ip + "/api/target", json={x: node.x, y: node.y})
+        requests.post("http://" + self.ip + ":5001/api/target", json={"x": int(node.x), "y": int(node.y)})
 
 
 class Graph:
@@ -86,7 +87,8 @@ class Zone:
         for node in nodes:
             node.zone = self
 
-        # self.throughpath, self.throughdist = pathfinder.nodeToNodeSearch(nodes[0], nodes[-1])
+       # self.throughpath, self.throughdist = pathfinder.nodeToNodeSearch(nodes[0], nodes[-1])
+        self.throughdist = 10
         self.throughpath = nodes
         self.conns = set()
         self.car_within = None
