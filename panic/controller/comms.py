@@ -1,5 +1,6 @@
 from controller.model import *
 from controller.pathfinder import *
+import math
 
 def carArrivesAtZone(car: Car, zone, graph):
     car.zone.car_within = None
@@ -36,6 +37,7 @@ def carSetsDestination(car: Car, dest: Zone, graph):
     graph.place_locks[car] = {}
     for i in range(1, len(car.path)):
         graph.place_locks[car][car.path[i]] = i
+    car.updateTarget(dest.nodes[math.floor(len(dest.nodes / 2))])
 
 def tick(graph, cars):
     for k, car in cars.items():
