@@ -54,7 +54,12 @@ def tick(graph, cars):
         # do we know where the car is going?
         # yes we do
         if car.path is None:
-            carSetsDestination(car, list(graph.zones)[-1], graph)
+            car.zbounce = -1 - car.zbounce
+            carSetsDestination(car, list(graph.zones)[car.zbounce], graph)
+        if car.zone == car.dest:
+            car.zbounce = -1 - car.zbounce
+            carSetsDestination(car, list(graph.zones)[car.zbounce], graph)
+        
         next_zone = car.path[car.path.index(car.zone) + 1]
         # here comes the awful logic
         # find the next node we need to visit

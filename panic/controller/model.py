@@ -36,6 +36,7 @@ class Car:
         self.y = None
         self.path = None
         self.angle = None
+        self.zbounce = 0
         # BEN DO WORK HERE
 
     def summarise(self):
