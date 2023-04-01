@@ -92,7 +92,7 @@ class Zone:
        # self.throughpath, self.throughdist = pathfinder.nodeToNodeSearch(nodes[0], nodes[-1])
         self.throughdist = 10
         self.throughpath = nodes
-        self.conns = set()
+        # self.conns = set()
         self.car_within = None
 
         self.start_other_zone = None
@@ -116,9 +116,9 @@ class Zone:
     def __hash__(self):
         return self.nodes[0].__hash__()
 
-    def add_conn(self, zn):
-        self.conns.add(zn)
-        zn.conns.add(self)
+    # def add_conn(self, zn):
+        # self.conns.add(zn)
+        # zn.conns.add(self)
 
     def nodeToNextZone(self, node, next_zone):
         # this isn't too bad
@@ -159,15 +159,15 @@ class Intersection:
                 self.dists[(self.nodes[i], other)] = self.nodes[i].dist(other)
         for node in nodes:
             node.zone = self
-        self.conns = set()
+        # self.conns = set()
         self.is_free = True
 
     def __hash__(self):
         return self.nodes[0].__hash__()
 
-    def add_conn(self, zn):
-        self.conns.add(zn)
-        pn.conns.add(self)
+    # def add_conn(self, zn):
+        # self.conns.add(zn)
+        # pn.conns.add(self)
 
     def nodeToNextZone(self, node, next_zone):
         # this is the ugly bit

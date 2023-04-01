@@ -8,6 +8,7 @@ from sys import argv
 from controller.model import PathNode
 from controller.camera import fishOutArucoTags
 import controller.shared
+import networkx as nx
 
 road_width = 60
 
@@ -670,6 +671,7 @@ def mapFromFilteredImg(img):
 
     zones_all = set()
 
+
     for series in path_series:
         zones = []
         for i in range(len(series)):
@@ -680,16 +682,22 @@ def mapFromFilteredImg(img):
             if len(nodes) == 0: continue
             zone = controller.model.Zone(nodes)
             zones_all.add(zone)
+    
+    net = nx.Graph()
+    net.add_nodes_from(list(zones_all))
 
-    for zone in list(zones_all):
+    for zone in net.nodes():
         # i am beyond all comprehension
         for n in zone.nodes[-1].conns:
-            if n.zone != zone: zone.add_conn(n.zone)
+            if n.zone != zone: net.add_edge(*(n.zone, zone))
         for n in zone.nodes[0].conns:
-            if n.zone != zone: zone.add_conn(n.zone)
+            if n.zone != zone: net.add_edge(*(n.zone, zone))
 
     graph = controller.model.Graph(all_of_them, list(zones_all.union(isections)))
     if not "noplot" in argv: plt.show()
+
+    nx.draw(net)
+    plt.show()
 
     return (graph, all_of_them, zones_all, isections)
 
