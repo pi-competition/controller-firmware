@@ -58,10 +58,9 @@ class Car:
 
 
 class Graph:
-    def __init__(self, nodes, zones_and_isections):
+    def __init__(self, nodes, graph):
         self.nodes = set(nodes)
-        self.zones = set(zones_and_isections)
-        print("GRAPH", len(self.zones))
+        self.zones = graph#        print("GRAPH", len(self.zones))
         self.dependency_graph = {} # thing, reqires_list_free
         self.place_locks = {} # car, {place, countdown}
         # self.current_paths = {} # car, [places]

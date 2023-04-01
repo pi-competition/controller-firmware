@@ -69,9 +69,12 @@ def genericBiDj(start, end, distance_fn, child_fn):
     return (path, total_dist)
 
 def nodeToNodeSearch(n1, n2):
+    print("node search")
     return genericBiDj(n1, n2, lambda a, b: a.dist(b), lambda n: list(n.conns))
 
-def zoneToZoneSearch(z1, z2):
+def zoneToZoneSearch(graph, z1, z2):
+    print("zone search")
+    return graph.graph.shortest_path(z1, z2)
     return genericBiDj(z1, z2, lambda a, b: a.throughdist/2 + b.throughdist/2, lambda n: list(n.conns))
 
 def findClosestNodeToPos(x, y, graph):

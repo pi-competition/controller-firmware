@@ -693,7 +693,7 @@ def mapFromFilteredImg(img):
         for n in zone.nodes[0].conns:
             if n.zone != zone: net.add_edge(*(n.zone, zone))
 
-    graph = controller.model.Graph(all_of_them, list(zones_all.union(isections)))
+    graph = controller.model.Graph(all_of_them, net) # list(zones_all.union(isections)))
     if not "noplot" in argv: plt.show()
 
     nx.draw(net)
