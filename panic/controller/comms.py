@@ -56,7 +56,7 @@ def tick(graph, cars):
         if car.path is None:
             car.zbounce = -1 - car.zbounce
             carSetsDestination(car, list(graph.zones)[car.zbounce], graph)
-        if car.zone == car.dest:
+        if car.zone == car.dest or (car.path.index(car.zone) + 1) >= len(car.path):
             car.zbounce = -1 - car.zbounce
             carSetsDestination(car, list(graph.zones)[car.zbounce], graph)
         
