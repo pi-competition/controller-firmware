@@ -49,7 +49,8 @@ def tick(graph, cars):
         if car_zone != car.zone:
             print("Car has non-consentually entered a zone")
             car.zone = car_zone
-
+            if not car.zone in car.path:
+                carSetsDestination(car, car.dest, graph)
         # we know where the car is
         # do we know where the car is going?
         # yes we do
