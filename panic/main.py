@@ -65,6 +65,8 @@ from server.routes.api.cars.reset_bulk import ResetBulk
 api.add_resource(ResetBulk, '/api/cars/reset-bulk')
 from server.routes.ext.mapimg import MapImg
 api.add_resource(MapImg, '/ext/map/img')
+from server.routes.ext.maprefresh import MapRefresh
+api.add_resource(MapRefresh, '/ext/map/refresh')
 from server.routes.ext.mapdata import MapData
 api.add_resource(MapData, '/ext/map/data')
 from server.routes.ext.tps import Tps
