@@ -33,7 +33,7 @@ def tellCarWhereItsGoing(car: Car, node):
 
 def carSetsDestination(car: Car, dest: Zone, graph):
     car.dest = Zone
-    car.path = zoneToZoneSearch(graph, car.zone, dest)[0]
+    car.path = zoneToZoneSearch(graph, car.zone, dest)
     graph.place_locks[car] = {}
     for i in range(1, len(car.path)):
         graph.place_locks[car][car.path[i]] = i
