@@ -48,10 +48,12 @@ class Car:
         self.x = x
         self.y = y
         self.angle = angle
-        requests.post("http://" + self.ip + ":5001/api/updatepos", json={"x": int(x), "y": int(y), "angle": int(angle)})
+        print("Posting api/updatepos on", self.ip)
+        requests.post("http://" + self.ip + ":5001/api/pos", json={"x": int(x), "y": int(y), "angle": int(angle)})
 
     def updateTarget(self, node):
         self.immediate_target = node
+        print("Posting api/target on", self.ip)
         requests.post("http://" + self.ip + ":5001/api/target", json={"x": int(node.x), "y": int(node.y)})
 
 

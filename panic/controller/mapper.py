@@ -170,8 +170,11 @@ def mapFromFilteredImg(img):
     iters = 8
     thresholded = cv.erode(cv.dilate(thresholded, element, iterations=iters), element, iterations=iters)
     plt.imshow(thresholded); plt.show()
-    lower_blue = np.array([100,50,50])
-    upper_blue = np.array([120,255,255])
+# charlie thresholds
+#    lower_blue = np.array([100,50,50])
+#    upper_blue = np.array([120,255,255])
+    lower_blue = np.array([0, 0, 220])
+    upper_blue = np.array([255, 255, 255])
     yellowed = (cv.inRange(hsv, lower_blue, upper_blue))
 
     showimg(cv.cvtColor(img, cv.COLOR_BGR2RGB), "src")
