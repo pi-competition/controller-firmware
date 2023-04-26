@@ -4,7 +4,7 @@ import cv2 as cv
 import math
 # import main
 import controller.shared
-
+from matplotlib import pyplot as plt
 # mtx = None
 
 # from picamera2 import Picamera2, Preview
@@ -61,6 +61,23 @@ def fishOutArucoTags(img):
 
 # camera = bufferless.BufferlessVideoCapture(0)
 
+def bearingBetween2Points(s_x, s_y, d_x, d_y):
+    dx = d_x - s_x
+    dy = d_y - s_y
+    theta = math.atan(abs(dy/dx))
+    if dx < 0:
+        if dy < 0:
+            theta = (3/2) * math.pi - theta
+        else:
+            theta = (3/2) * math.pi + theta
+    elif dy < 0:
+        theta = (1/2) * math.pi + theta
+    else:
+        theta = (1/2) * math.pi - theta
+
+    return theta
+
+
 def updateCamera():
     img = v.read()
     # img = cv.cvtColor(cam.capture_array(), cv.COLOR_RGB2BGR)
@@ -76,6 +93,11 @@ def updateCamera():
 
     # please save me from what i have created
 
+    # debug shizz
+#    if len(centers) == 0:
+#        plt.imshow(img)
+#        plt.show()
+
     for x, y, idx in centers:
         print("THERES A CAR YO")
         print("at", x, y, "and id is", ids[idx])
@@ -86,8 +108,13 @@ def updateCamera():
         dx = tl_x - x
         if dx == 0: dx = 0.0001
 
+        """
+
         # pronounced they-ta
-        theta = math.atan(dy/dx)
+        theta = math.atan(abs(dy/dx))
+        if dx < 0:
+            if dy < 0:
+                theta = (3/2)*math
         if dx < 0: theta = (3/2)*math.pi - theta
         else: theta = (1/2)*math.pi - theta
 
@@ -96,6 +123,25 @@ def updateCamera():
         # make it straight
         theta += math.pi/4
         theta %= 2*math.pi
+"""
+        theta = bearingBetween2Points(x, y, tl_x, tl_y)
+        #theta += (1/4) * math.pi
+        #theta += 2*math.pi
+        #theta = theta % 2*math.pi
+
+        fig, ax = plt.subplots()
+        ax.imshow(img)
+        ax.plot([centers[idx][0]], [centers[idx][1]], color="green", marker="o")
+        length = 500
+        x_ = centers[idx][0] + length * math.sin(theta)
+        y_ = centers[idx][1] + length * math.cos(theta)
+
+        ax.plot([x_], [y_], color="blue", marker="o")
+        print(theta)
+
+ #       plt.show()
+        
+
 
         # we have ongle! and pos!
         if ids[idx][0] in controller.shared.cars:

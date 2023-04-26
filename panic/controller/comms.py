@@ -32,8 +32,9 @@ def tellCarWhereItsGoing(car: Car, node):
     car.updateTarget(node.x, node.y)
 
 def carSetsDestination(car: Car, dest: Zone, graph):
-    car.dest = Zone
+    car.dest = dest
     car.path = zoneToZoneSearch(graph, car.zone, dest)
+    print("Car path:", car.path, car.zone, dest)
     graph.place_locks[car] = {}
     for i in range(1, len(car.path)):
         graph.place_locks[car][car.path[i]] = i
@@ -49,7 +50,10 @@ def tick(graph, cars):
         if car_zone != car.zone:
             print("Car has non-consentually entered a zone")
             car.zone = car_zone
-            if not car.zone in car.path:
+            if car.path is None or not car.zone in car.path:
+                if car.dest is None:
+                    # TODO: ben do work here
+                    car.dest = list(graph.zones.nodes)[0 if car.zone == list(graph.zones.nodes)[-1] else -1]
                 carSetsDestination(car, car.dest, graph)
         # we know where the car is
         # do we know where the car is going?
@@ -57,16 +61,18 @@ def tick(graph, cars):
         if car.path is None:
             car.zbounce = -1 - car.zbounce
             carSetsDestination(car, list(graph.zones)[car.zbounce], graph)
-        if car.zone == car.dest or (car.path.index(car.zone) + 1) >= len(car.path):
+        while car.zone == car.dest or (car.path.index(car.zone) + 1) >= len(car.path):
             car.zbounce = -1 - car.zbounce
             carSetsDestination(car, list(graph.zones)[car.zbounce], graph)
+            print("loopin")
         
         next_zone = car.path[car.path.index(car.zone) + 1]
         # here comes the awful logic
         # find the next node we need to visit
         next_node = car.zone.nodeToNextZone(car_node, next_zone)[0]
-        car.immediate_target = next_node
-        car.updateTarget(next_node)
+        if car.immediate_target != next_node:
+            car.immediate_target = next_node
+            car.updateTarget(next_node)
 
         # now we issue a correction
         # TODO: do this logic car-side
