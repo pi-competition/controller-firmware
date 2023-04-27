@@ -5,3 +5,4 @@ setuptools
 flask
 flask-restful 
 requests
+paho-mqtt

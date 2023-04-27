@@ -14,6 +14,7 @@ import controller.comms
 import controller.mapper
 from controller import shared
 from controller import model
+import paho.mqtt.client as mqtt
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 api = PANICAPI(app)
@@ -27,11 +28,11 @@ DEVICES = {}
 CONFIG = {}
 app.config["DEVICES"] = DEVICES
 
-"""
+
 with open("config.json") as f:
     CONFIG = json.loads(f.read())
     app.config["CONFIG"] = CONFIG
-"""
+
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -39,7 +40,7 @@ def page_not_found(e):
 
 @app.route('/*', methods=['OPTIONS'])
 def options():
-    allowed_origins = ["staging.teampanic.eu.org", "teampanic.eu.org", "localhost"]
+    allowed_origins = ["staging.teampanic.eu.org", "teampanic.eu.org", "localhost:3000"]
     if request.headers.get('Origin') in allowed_origins:
         return Response(status=204, headers={
             'Access-Control-Allow-Origin': request.headers.get('Origin'),
@@ -160,17 +161,22 @@ shared.graph = graph
 print(type(controller.shared.graph))
 tps = 0
 ticks_per_sec = 0
+mqttBroker = "localhost"
+client = mqtt.Client("local_stuff")
+client.connect(mqttBroker)
 def sync_tps():
     # this is probably a bad idea
-    threading.Timer(5.0, sync_tps).start()
+    threading.Timer(2.0, sync_tps).start()
     global ticks_per_sec
     global tps
-    tps = ticks_per_sec/5
+    tps = ticks_per_sec/2
     controller.shared.tps = tps
     ticks_per_sec = 0
+    client.publish("tps", tps)
     print("ticks per sec:", tps)
 
-tps_sync = threading.Timer(5.0, sync_tps)
+
+tps_sync = threading.Timer(2.0, sync_tps)
 tps_sync.start()
 
 while True:

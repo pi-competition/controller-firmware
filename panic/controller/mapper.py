@@ -163,7 +163,8 @@ def mapFromFilteredImg(img):
 # hsv = cv.flip(cv.cvtColor(img, cv.COLOR_BGR2HSV), 0)
     hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
 # img = Image.fromarray(np.uint8(img))
-    sensitivity = 120
+# BLACK SENS
+    sensitivity = 150
     element = cv.getStructuringElement(cv.MORPH_RECT, (2,2))
     lower_white = np.array([0,0,0])
     upper_white = np.array([255,255,sensitivity])

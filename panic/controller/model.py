@@ -72,14 +72,12 @@ class Graph:
             if self.place_locks[car][k] <= 1: del self.place_locks[car][k]
             else: self.place_locks[car][k] -= 1
 
-    def fromPosToClosestNode(self, x, y):
-        mindist = math.inf
-        closest = None
+    def fromPosToClosestNode(self, x, y, thresh):
+        out = []
         for node in self.nodes:
             dist = math.sqrt((node.x - x)**2 + (node.y - y)**2)
-            if dist < mindist:
-                mindist = dist
-                closest = node
+            if dist < thresh:
+                out.append(node)
         
         return closest
 

@@ -137,14 +137,19 @@ def updateCamera():
         y_ = centers[idx][1] + length * math.cos(theta)
 
         ax.plot([x_], [y_], color="blue", marker="o")
+        
+        if not controller.shared.cars[ids[idx][0]].immediate_target is None:
+            ax.plot([controller.shared.cars[ids[idx][0]].immediate_target.x], [controller.shared.cars[ids[idx][0]].immediate_target.y], color="red", marker="o")
+
         print(theta)
 
- #       plt.show()
+        plt.show()
         
 
 
         # we have ongle! and pos!
         if ids[idx][0] in controller.shared.cars:
+
             controller.shared.cars[ids[idx][0]].updatePos(centers[idx][0], centers[idx][1], theta)
         else:
             print("its not connected :(")

@@ -36,8 +36,8 @@ def carSetsDestination(car: Car, dest: Zone, graph):
     car.path = zoneToZoneSearch(graph, car.zone, dest)
     print("Car path:", car.path, car.zone, dest)
     graph.place_locks[car] = {}
-    for i in range(1, len(car.path)):
-        graph.place_locks[car][car.path[i]] = i
+#    for i in range(1, len(car.path)):
+#        graph.place_locks[car][car.path[i]] = i
     car.updateTarget(dest.nodes[math.floor(len(dest.nodes) / 2)])
 
 def tick(graph, cars):
@@ -45,7 +45,26 @@ def tick(graph, cars):
         if car.x is None:
             print("uninitted car", k, car)
             continue
-        car_node = graph.fromPosToClosestNode(car.x, car.y)
+        if car.path is None:
+            car.zbounce = -1 - car.zbounce
+            carSetsDestination(car, list(graph.zones)[car.zbounce], graph)
+        while car.zone == car.dest or (car.path.index(car.zone) + 1) >= len(car.path):
+            car.zbounce = -1 - car.zbounce
+            carSetsDestination(car, list(graph.zones)[car.zbounce], graph)
+            print("loopin")
+        car_nodes = graph.fromPosToClosestNode(car.x, car.y, 100)
+        maxidx = -1
+        node_ = None
+        for node in car_nodes:
+            if not node in car.path: continue
+            idx = car.path.index(node)
+            if idx > maxidx:
+                maxidx = idx
+                node_ = node
+        if node_ is None:
+            print("uhhhh")
+            continue
+        car_node = node_
         car_zone = car_node.zone
         if car_zone != car.zone:
             print("Car has non-consentually entered a zone")
@@ -58,13 +77,6 @@ def tick(graph, cars):
         # we know where the car is
         # do we know where the car is going?
         # yes we do
-        if car.path is None:
-            car.zbounce = -1 - car.zbounce
-            carSetsDestination(car, list(graph.zones)[car.zbounce], graph)
-        while car.zone == car.dest or (car.path.index(car.zone) + 1) >= len(car.path):
-            car.zbounce = -1 - car.zbounce
-            carSetsDestination(car, list(graph.zones)[car.zbounce], graph)
-            print("loopin")
         
         next_zone = car.path[car.path.index(car.zone) + 1]
         # here comes the awful logic
