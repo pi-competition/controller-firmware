@@ -6,5 +6,5 @@ class PANICAPI(Api):
         if e.code == 405:
             return error("The requested method is not allowed", 405)
         print(e)
-        return error("An unexpected error occurred.", 500)
+        return error("A ben moment occurred.", 500)
 

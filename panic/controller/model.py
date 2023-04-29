@@ -79,7 +79,18 @@ class Graph:
             if dist < thresh:
                 out.append(node)
         
-        return closest
+        return out
+
+    def fromPosToClosestNodeSingular(self, x, y):
+        mindist = math.inf
+        out = None
+        for node in self.nodes:
+            dist = math.sqrt((node.x - x)**2 + (node.y - y)**2)
+            if dist < mindist:
+                mindist = dist
+                out = node
+        
+        return out
 
 class Zone:
     def __init__(self, nodes):

@@ -76,6 +76,8 @@ from server.routes.ext.camimg import CamImg
 api.add_resource(CamImg, '/ext/cam/img')
 from server.routes.ext.cars.summary import CarSummary
 api.add_resource(CarSummary, '/ext/cars/summary')
+from server.routes.api.cars.set_destination import SetDestination
+api.add_resource(SetDestination, '/api/cars/set-destination')
 
 def get_devices():
     threading.Timer(60, get_devices).start()

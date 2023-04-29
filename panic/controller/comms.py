@@ -45,13 +45,18 @@ def tick(graph, cars):
         if car.x is None:
             print("uninitted car", k, car)
             continue
+        if car.zone == car.dest:
+            # it is arrived
+            print("congrations you are arrived")
+            car.path = None
         if car.path is None:
-            car.zbounce = -1 - car.zbounce
-            carSetsDestination(car, list(graph.zones)[car.zbounce], graph)
-        while car.zone == car.dest or (car.path.index(car.zone) + 1) >= len(car.path):
-            car.zbounce = -1 - car.zbounce
-            carSetsDestination(car, list(graph.zones)[car.zbounce], graph)
-            print("loopin")
+            continue
+        #     car.zbounce = -1 - car.zbounce
+        #     carSetsDestination(car, list(graph.zones)[car.zbounce], graph)
+        # while car.zone == car.dest or (car.path.index(car.zone) + 1) >= len(car.path):
+        #     car.zbounce = -1 - car.zbounce
+        #     carSetsDestination(car, list(graph.zones)[car.zbounce], graph)
+        #     print("loopin")
         car_nodes = graph.fromPosToClosestNode(car.x, car.y, 100)
         maxidx = -1
         node_ = None
