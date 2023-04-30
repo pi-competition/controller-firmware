@@ -19,4 +19,4 @@ class SetDestination(Resource):
         zone = node.zone
         controller.comms.carSetsDestination(car, zone, controller.shared.graph)
 
-        return success()
+        return success({}, 204)
