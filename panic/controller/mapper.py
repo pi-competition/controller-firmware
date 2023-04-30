@@ -514,6 +514,7 @@ def mapFromFilteredImg(img):
     
     net = nx.Graph()
     net.add_nodes_from(list(zones_all))
+    net.add_nodes_from(list(isections))
 
     for zone in net.nodes():
         for other in list(zone.conns):
