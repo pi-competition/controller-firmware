@@ -177,8 +177,7 @@ class Intersection:
         self.conns = set()
         for i in range(len(self.nodes)):
             for other in (self.nodes[:i] + self.nodes[i+1:]):
-                self.conns.add(other.zone)
-                if not other.zone is None: other.zone.conns.add(self)
+                # if not other.zone is None: other.zone.conns.add(self)
                 self.dists[(self.nodes[i], other)] = self.nodes[i].dist(other)
         for node in nodes:
             node.zone = self
