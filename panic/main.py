@@ -10,6 +10,7 @@ import json
 import controller
 import controller.model
 import controller.camera
+import os
 import controller.comms
 import controller.mapper
 from controller import shared
@@ -200,6 +201,15 @@ def sync_tps():
 if not "notelem" in sys.argv:
     tps_sync = threading.Timer(2.0, sync_tps)
     tps_sync.start()
+
+def telemetry():
+    threading.Timer(1.0, telemetry).start()
+    temp = os.popen("cat /sys/class/thermal/thermal_zone0/temp").read()
+    temp = int(temp) / 1000
+    client.publish("control_temp", temp)
+
+telem = threading.Timer(1.0, telemetry)
+telem.start()
 
 while True:
     # print("ticking")
