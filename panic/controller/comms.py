@@ -47,16 +47,19 @@ def tick(graph, cars):
             print("uninitted car", k, car)
             car.setEnabled(False)
             continue
-        if car.zone == car.dest:
+        if car.zone == car.dest and not car.zone is None:
             # it is arrived
             print("congrations you are arrived")
             car.path = None
             car.dest = None
             car.setEnabled(False)
             continue
-        car.setEnabled(True)
+        if car.dest is None:
+            car.setEnabled(False)
+            continue
         if car.path is None:
             continue
+        car.setEnabled(True)
         #     car.zbounce = -1 - car.zbounce
         #     carSetsDestination(car, list(graph.zones)[car.zbounce], graph)
         # while car.zone == car.dest or (car.path.index(car.zone) + 1) >= len(car.path):
@@ -78,6 +81,9 @@ def tick(graph, cars):
             continue
         car_node = node_
         car_zone = car_node.zone
+        if car.zone is None:
+            car.zone = car_zone
+            continue
         if car_zone != car.zone:
             print("Car has non-consentually entered a zone")
             car.zone = car_zone
