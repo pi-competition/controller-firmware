@@ -15,7 +15,7 @@ class SetDestination(Resource):
             return error("Invalid JSON", 400)
 
         car = list(controller.shared.cars.values())[0]
-        node = controller.shared.graph.fromPosToClosestNodeSingular(int(data["x"]), int(data["y"]), 100)
+        node = controller.shared.graph.fromPosToClosestNodeSingular(int(data["x"]), int(data["y"]))
         zone = node.zone
         controller.comms.carSetsDestination(car, zone, controller.shared.graph)
 
