@@ -423,6 +423,22 @@ def mapFromFilteredImg(img):
 
     isnodes = []
 
+    # now we need to zoning laws
+
+    zones_all = set()
+
+
+    for series in path_series:
+        zones = []
+        for i in range(len(series)):
+            if i%zone_length == 0:
+                zones.append([])
+            zones[-1].append(series[i])
+        for nodes in zones:
+            if len(nodes) == 0: continue
+            zone = controller.model.Zone(nodes)
+            zones_all.add(zone)
+
 # add inodes
     for series in path_series:
         if len(series) == 0: continue # fix dis
@@ -443,7 +459,10 @@ def mapFromFilteredImg(img):
         # else:
             # plt.scatter([series[i+1].x], [series[i+1].y], c='purple')
         for i in range(len(series)):
-            plt.plot([series[i].x, series[i].x], [series[i].y, series[i].y], colours[series_idx % len(colours)], linestyle=':')
+            # plt.plot([series[i].x, series[i].x], [series[i].y, series[i].y], colours[series_idx % len(colours)], linestyle=':')
+            node = series[i]
+            for other in list(node.conns):
+                plt.plot([node.x, other.x], [node.y, other.y], linestyle=':')
             if series[i].isection_ind != -1:
                 plt.scatter([series[i].x], [series[i].y], c='red')
             else:
@@ -486,31 +505,19 @@ def mapFromFilteredImg(img):
 
     print("here")
 
-    # now we need to zoning laws
-
-    zones_all = set()
-
-
-    for series in path_series:
-        zones = []
-        for i in range(len(series)):
-            if i%zone_length == 0:
-                zones.append([])
-            zones[-1].append(series[i])
-        for nodes in zones:
-            if len(nodes) == 0: continue
-            zone = controller.model.Zone(nodes)
-            zones_all.add(zone)
+    
     
     net = nx.Graph()
     net.add_nodes_from(list(zones_all))
 
     for zone in net.nodes():
+        for other in list(zone.conns):
+            net.add_edge(*(other.zone, zone))
         # i am beyond all comprehension
-        for n in zone.nodes[-1].conns:
-            if n.zone != zone: net.add_edge(*(n.zone, zone))
-        for n in zone.nodes[0].conns:
-            if n.zone != zone: net.add_edge(*(n.zone, zone))
+        # for n in zone.nodes[-1].conns:
+            # if n.zone != zone: net.add_edge(*(n.zone, zone))
+        # for n in zone.nodes[0].conns:
+            # if n.zone != zone: net.add_edge(*(n.zone, zone))
 
     graph = controller.model.Graph(all_of_them, net) # list(zones_all.union(isections)))
     if not "noplot" in argv: plt.show()

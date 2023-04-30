@@ -119,6 +119,10 @@ class Zone:
                 self.end_other_zone = i.zone
                 self.end_other_node = i
 
+        self.conns = set()
+        self.conns.add(self.end_other_zone)
+        self.conns.add(self.start_other_zone)
+
     def set_car(self, car):
         self.car_within = car
 
@@ -163,8 +167,11 @@ class Intersection:
     def __init__(self, nodes):
         self.nodes = nodes
         self.dists = {} # (n, n) : int
+        self.conns = set()
         for i in range(len(self.nodes)):
             for other in (self.nodes[:i] + self.nodes[i+1:]):
+                self.conns.add(other.zone)
+                other.zone.conns.add(self)
                 self.dists[(self.nodes[i], other)] = self.nodes[i].dist(other)
         for node in nodes:
             node.zone = self
