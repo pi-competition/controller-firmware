@@ -50,6 +50,7 @@ def tick(graph, cars):
             # it is arrived
             print("congrations you are arrived")
             car.path = None
+            car.dest = None
         if car.path is None:
             continue
         #     car.zbounce = -1 - car.zbounce
@@ -58,15 +59,16 @@ def tick(graph, cars):
         #     car.zbounce = -1 - car.zbounce
         #     carSetsDestination(car, list(graph.zones)[car.zbounce], graph)
         #     print("loopin")
-        car_nodes = graph.fromPosToClosestNode(car.x, car.y, 200)
+        car_nodes = graph.fromPosToClosestNodeSingular(car.x, car.y)
         maxidx = -1
         node_ = None
-        for node in car_nodes:
-            if not node in car.path: continue
-            idx = car.path.index(node)
-            if idx > maxidx:
-                maxidx = idx
-                node_ = node
+        node_ = car_nodes
+        # for node in car_nodes:
+            # if not node in car.path: continue
+            # idx = car.path.index(node)
+            # if idx > maxidx:
+                # maxidx = idx
+                # node_ = node
         if node_ is None:
             print("significant deviation uhhhh")
             continue
