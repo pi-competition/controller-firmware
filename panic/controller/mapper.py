@@ -36,13 +36,14 @@ params = cv.SimpleBlobDetector_Params()
 
 # Change thresholds
 params.minThreshold = 1
-params.maxThreshold = 50000
+params.maxThreshold = 500
 
 
 # Filter by Area.
 params.filterByArea = True
 params.minArea = 40
-params.maxArea = 100000
+if controller.shared.debug:
+    params.maxArea = 100
 
 params.blobColor = -1
 params.filterByColor = False
