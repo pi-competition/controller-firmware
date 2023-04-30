@@ -4,3 +4,6 @@ mapimg = None
 graph = None
 tps = -1
 camimg = None
+headless = False
+debug = False
+notag = False

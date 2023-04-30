@@ -14,7 +14,12 @@ import controller.comms
 import controller.mapper
 from controller import shared
 from controller import model
-import paho.mqtt.client as mqtt
+
+import sys
+
+if not "notelem" in sys.argv:
+    import paho.mqtt.client as mqtt
+
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 api = PANICAPI(app)
@@ -125,7 +130,10 @@ def get_devices():
         # TODO: beter cleanup, !IMPORTANT
 
 
-
+import sys
+controller.shared.headless = "headless" in sys.argv
+controller.shared.debug = "debug" in sys.argv
+controller.shared.notag = "notag" in sys.argv
 
 
 
@@ -147,25 +155,37 @@ import cv2
 # temp_img = cv2.imread("tagged2.png")
 
 from controller import camera
+from matplotlib import pyplot as plt
 # camera.previewToTakePicSetup()
 while True:
     input("Press enter to take map image")
-# mapimg = temp_img
-    temp_img = camera.getImage()
-    from matplotlib import pyplot as plt
-    plt.imshow(temp_img)
-    plt.show()
-# if not "noplot" in argv: plt.show()
+    if controller.shared.debug:
+        temp_img = cv2.imread(input().strip())
+    else:
+        temp_img = camera.v.read()
+
+    if not controller.shared.headless:
+        plt.imshow(temp_img)
+        plt.show()
+
     if "y" == input("is this your picture?"): break
+
+controller.shared.camimg = temp_img
+
 graph, nodes, zones, isections = controller.mapper.mapFromFilteredImg(temp_img)
 shared.graph = graph
 
 print(type(controller.shared.graph))
+
+
 tps = 0
 ticks_per_sec = 0
-mqttBroker = "localhost"
-client = mqtt.Client("local_stuff")
-client.connect(mqttBroker)
+
+if not "notelem" in sys.argv:
+    mqttBroker = "localhost"
+    client = mqtt.Client("local_stuff")
+    client.connect(mqttBroker)
+
 def sync_tps():
     # this is probably a bad idea
     threading.Timer(2.0, sync_tps).start()
@@ -177,9 +197,9 @@ def sync_tps():
     client.publish("tps", tps)
     print("ticks per sec:", tps)
 
-
-tps_sync = threading.Timer(2.0, sync_tps)
-tps_sync.start()
+if not "notelem" in sys.argv:
+    tps_sync = threading.Timer(2.0, sync_tps)
+    tps_sync.start()
 
 while True:
     # print("ticking")

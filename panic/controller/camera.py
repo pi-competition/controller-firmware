@@ -52,6 +52,8 @@ def bearingBetween2Points(s_x, s_y, d_x, d_y):
 
 
 def updateCamera():
+    if controller.shared.debug: return
+
     img = v.read()
     height, width = img.shape[:2]
     img = cv.warpPerspective(img, controller.shared.mtx, (width, height), flags=cv.INTER_LINEAR)

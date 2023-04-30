@@ -60,7 +60,8 @@ params.minInertiaRatio = 0.01
 
 
 def clipImageEdges(img):
-    # global mtx
+    if controller.shared.notag: return img
+
     height, width = img.shape[:2]
 
     corners, ids, centers = fishOutArucoTags(img)
@@ -97,12 +98,6 @@ def clipImageEdges(img):
                 bounding_points[i] = (round(x), round(y))
                 maxdist = dist
 
-
-
-    # fish_out_these = [3, 0, 3, 3]
-    # for i in range(len(bounding_points)):
-        # bounding_points[i] = [round(i) for i in list(corners[idxes[i]][0][fish_out_these[i]])]
-
     # and we are done
     # bada bing bada boom
     print(bounding_points)
@@ -110,9 +105,7 @@ def clipImageEdges(img):
         cv.line(clone, bounding_points[i - 1], bounding_points[i], (255, 0, 0), 5)
 
     showimg(clone, "bounded")
-    # plt.imshow(clone)
-    # plt.show()
-    # print(np.fload32(offsets), np.array(bounding_points))
+
     mtx = cv.getPerspectiveTransform(np.float32(bounding_points), np.float32(offsets))
     warped = cv.warpPerspective(img, mtx, (width, height), flags=cv.INTER_LINEAR)
 
@@ -124,7 +117,7 @@ def clipImageEdges(img):
     
 
 
-detector = cv.SimpleBlobDetector_create(params)
+detector = cv.SimpleBlobDetector_create(params) if not controller.shared.debug else cv.SimpleBlobDetector_create(0)
 
 params.filterByArea = True
 
@@ -157,12 +150,9 @@ def mapFromFilteredImg(img):
 
     controller.shared.mapimg = img
 
-    # plt.imshow(img)
-    # plt.show()
-    # img = cv.imread(argv[1])
-# hsv = cv.flip(cv.cvtColor(img, cv.COLOR_BGR2HSV), 0)
-    hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
-# img = Image.fromarray(np.uint8(img))
+    hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV) if not controller.shared.debug else img
+
+    plt.imshow(hsv); plt.show()
 # BLACK SENS
     sensitivity = 150
     element = cv.getStructuringElement(cv.MORPH_RECT, (2,2))
@@ -170,8 +160,11 @@ def mapFromFilteredImg(img):
     upper_white = np.array([255,255,sensitivity])
     thresholded = cv.bitwise_not(cv.inRange(hsv, lower_white, upper_white))
     iters = 8
-    thresholded = cv.erode(cv.dilate(thresholded, element, iterations=iters), element, iterations=iters)
+    if not controller.shared.debug:
+        thresholded = cv.erode(cv.dilate(thresholded, element, iterations=iters), element, iterations=iters)
+    print("a")
     plt.imshow(thresholded); plt.show()
+    print("imshowed")
 # charlie thresholds
 #    lower_blue = np.array([100,50,50])
 #    upper_blue = np.array([120,255,255])
@@ -187,22 +180,6 @@ def mapFromFilteredImg(img):
     yellowed = cv.erode(mask, element)
 
     num_labels, labels_im = cv.connectedComponents(yellowed)
-#     intsecblobs = detector2.detect(np.array(labels_im).astype(np.int8))
-#     colours = []
-# #
-#     for i in intsecblobs:
-#         colours.append(labels_im[i.pt])
-#
-#     for i in range(1, num_labels + 1):
-#         if i in colours:
-#             pass
-#         else:
-#             labels_im[labels_im == i] = 0
-#
-#     for i in colours:
-#         labels_im[labels_im == i] = colours.index(i)
-#
-#     num_labels = len(colours)
 
     print(num_labels)
     split = np.array(labels_im)
@@ -216,30 +193,8 @@ def mapFromFilteredImg(img):
     intersections = []
     intersection_nodes = []
 
-
-    # for i in range(1, num_labels):
-    #     specific = (split == i).astype(bool)
-    #     intersections.append(specific)
-    #     intersection_nodes.append([])
-    #
-
-    # def imshow_components(labels):
-    #     # Map component labels to hue val
-    #     label_hue = np.uint8(179*labels/np.max(labels))
-    #     blank_ch = 255*np.ones_like(label_hue)
-    #     labeled_img = cv.merge([label_hue, blank_ch, blank_ch])
-    #
-    #     # cvt to BGR for display
-    #     labeled_img = cv.cvtColor(labeled_img, cv.COLOR_HSV2BGR)
-    #
-    #     # set bg label to black
-    #     labeled_img[label_hue==0] = 0
-    #
-    #     cv.imshow('labeled.png', labeled_img)
-    #     cv.waitKey()
-
-
     blobs = detector.detect(thresholded)
+    print(blobs)
     print(blobs[0].pt)
 
     x = []
