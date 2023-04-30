@@ -36,8 +36,7 @@ def carSetsDestination(car: Car, dest: Zone, graph):
     car.path = zoneToZoneSearch(graph, car.zone, dest)
     print("Car path:", car.path, car.zone, dest)
     graph.place_locks[car] = {}
-#    for i in range(1, len(car.path)):
-#        graph.place_locks[car][car.path[i]] = i
+
     car.updateTarget(dest.nodes[math.floor(len(dest.nodes) / 2)])
 
 def tick(graph, cars):
