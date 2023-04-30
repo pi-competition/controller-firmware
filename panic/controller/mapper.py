@@ -193,8 +193,9 @@ def mapFromFilteredImg(img):
 
     intersections = []
     intersection_nodes = []
-
+    print("beginning detection")
     blobs = detector.detect(thresholded)
+    print("ended detection")
     print(blobs)
     print(blobs[0].pt)
 
