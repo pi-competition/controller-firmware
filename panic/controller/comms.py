@@ -58,7 +58,7 @@ def tick(graph, cars):
         #     car.zbounce = -1 - car.zbounce
         #     carSetsDestination(car, list(graph.zones)[car.zbounce], graph)
         #     print("loopin")
-        car_nodes = graph.fromPosToClosestNode(car.x, car.y, 100)
+        car_nodes = graph.fromPosToClosestNode(car.x, car.y, 5000)
         maxidx = -1
         node_ = None
         for node in car_nodes:
