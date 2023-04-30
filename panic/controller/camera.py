@@ -81,8 +81,9 @@ def updateCamera():
             y_ = centers[idx][1] + length * math.cos(theta)
 
             ax.plot([x_], [y_], color="blue", marker="o")
+
         
-            if not controller.shared.cars[ids[idx][0]].immediate_target is None:
+            if ids[idx][0] in controller.shared.cars.keys() and not controller.shared.cars[ids[idx][0]].immediate_target is None:
                 ax.plot([controller.shared.cars[ids[idx][0]].immediate_target.x], [controller.shared.cars[ids[idx][0]].immediate_target.y], color="red", marker="o")
 
             print(theta)

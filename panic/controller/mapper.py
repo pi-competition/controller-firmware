@@ -60,6 +60,72 @@ params.minConvexity = 0.87
 params.filterByInertia = False
 params.minInertiaRatio = 0.01
 
+def addIsectionNodeToEnd(node, nextNode, curr_series, intersection_nodes, labelled):
+    pass
+    # intersection mafs
+    # we BACKtrack along orig_m
+    # first, if it's already in an intsect, we need not bother
+    if labelled[round(node.y), round(node.x)] != 0:
+        node.isection_ind = labelled[round(node.y, node.x)]
+        intersection_nodes[node.isection_ind].append(node)
+        return False
+        # find which one
+        # for j in range(len(intersections)):
+            # if j[series[0].y, series[0].x] != 0:
+                # series[0].isection_ind = j
+                # intersection_nodes[j].append(series[0])
+                # break
+        # continue
+
+    x1 = node.x
+    y1 = node.y
+    dy = node.y - nextNode.y
+    dx = node.x - nextNode.x
+    if dx == 0: dx = 0.00001
+    if dy == 0: dy = -0.00001
+    m = dy/dx
+    theta = math.atan(abs(m))
+    xv = 0
+    yv = 0
+    l = 1
+
+    precomp_cos = math.cos(theta) * sign(dx) * -1
+    precomp_sin = math.sin(theta) * sign(dy) * -1
+    # try:
+    while labelled[round(y1 - yv), round(x1 - xv)] == 0:
+        # TODO: What in the absolute sodding hell does this do
+        # and why does it work so well
+        xv = l * precomp_cos # * math.cos(theta) * sign(dx) * -1
+        yv = l * precomp_sin # * math.sin(theta) * sign(dy) * -1
+        l += 1
+
+    # now we have to find which one
+
+    # move in a little bit
+    l += road_width/8
+    xv = l * math.cos(theta) * sign(dx) * -1
+    yv = l * math.sin(theta) * sign(dy) * -1
+
+    inode = PathNode(x1 - round(xv), y1 - round(yv), curr_series)
+    inode.isection_ind = labelled[round(y1 - yv), round(x1 - xv)]
+    inode.add_conn(node)
+    intersection_nodes[inode.isection_ind].append(inode)
+    # inode = None
+    # for j in range(len(intersections)):
+        # if intersections[j][round(y1 - yv), round(x1 - xv)] != 0:
+            # inode.isection_ind = j
+            # inode.add_conn(series[0])
+            # intersection_nodes[j].append(inode)
+            # break
+
+    # if inode != None:
+    return inode
+    # else:
+        # print("aaaa")
+        
+
+    
+
 
 def clipImageEdges(img):
     if controller.shared.notag: return img
@@ -119,7 +185,7 @@ def clipImageEdges(img):
     
 
 
-detector = cv.SimpleBlobDetector_create(params) if not controller.shared.debug else cv.SimpleBlobDetector_create(0)
+detector = cv.SimpleBlobDetector_create(params) if not controller.shared.debug else cv.SimpleBlobDetector_create(params)
 
 params.filterByArea = True
 
@@ -286,11 +352,11 @@ def mapFromFilteredImg(img):
     count = 0
     for node in nodes.values():
         if len(node.conns) != 1: count += 1
-    print("sjksdkjsdf")
-    print(count)
-    for (k,v) in nodes.items():
-        print(k)
-        print(v)
+    # print("sjksdkjsdf")
+    # print(count)
+    # for (k,v) in nodes.items():
+        # print(k)
+        # print(v)
         # print(v.con9c83c868ns)
 
     plt.show()
@@ -349,263 +415,57 @@ def mapFromFilteredImg(img):
 
 # plt.show()
 
-    """
-
-    plt.subplot(subpltrow, subpltcol, subpltind)
-    plt.title("screaming")
-
-
-    path_series = []
-
-
-    for series in dot_series:
-        s1 = []
-        s2 = []
-        # hoo boy maths time
-        for i in range(len(series)):
-            # get the two points
-            p1 = series[i-1] if i != 0 else series[0]
-            p2 = series[i+1] if (i+1) < len(series) else series[i]
-            # get gradient
-            dy = p1.y - p2.y
-            dx = p1.x - p2.x
-            if dx == 0:
-                dx = 0.00001
-            if dy == 0:
-                dy = 0.00001
-            orig_m = dy/dx
-            
-            m = (orig_m**(-1))*-1
-            x1 = series[i].x
-            y1 = series[i].y
-            l = road_width / 2
-
-            # pronounced th-eyyyy-ta
-            theta = math.atan(m)
-            xv = l * math.cos(theta)
-            yv = l * math.sin(theta)
-            
-            # plt.scatter([x1 + xv, x1 - xv], [y1 + yv, y1 - yv])
-
-            n1 = PathNode(x1 + xv, y1 + yv, series[i])
-            # if len(s1) != 1:
-                # s1[-1].add_conn(s1[-2])
-            n2 = PathNode(x1 - xv, y1 - yv, series[i])
-
-            
-
-            if len(s1) == 0:
-                s1.append(n1)
-                s2.append(n2)
-            elif n1.dist(s1[-1]) + n2.dist(s2[-1]) < n1.dist(s2[-1]) + n2.dist(s1[-1]):
-                s1.append(n1)
-                s2.append(n2)
-            else:
-                s1.append(n2)
-                s2.append(n1)
-
-            if len(s1) != 1:
-                s1[-1].add_conn(s1[-2])
-                s2[-1].add_conn(s2[-2])
-        path_series.append(s1)
-        path_series.append(s2)
-    print(yellowed)
-    """
 
     showimg(yellowed, "yella")
     plt.show()
 
-    intersection_nodes = [[]]
-    intersection_nodes = [[]]
+    intersection_nodes = [[] for i in range(num_labels)]
 
     isnodes = []
 
 # add inodes
     for series in path_series:
         if len(series) == 0: continue # fix dis
-        # first one
-        # intersection mafs
-        # we BACKtrack along orig_m
-        # first, if it's already in an intsect, we need not bother
-        if yellowed[round(series[0].y), round(series[0].x)] != 0:
-            series[0].isection_ind = yellowed[round(series[0].y, series[0].x)]
-            intersection_nodes[series[0].isection_ind].append(series[0])
-            # find which one
-            # for j in range(len(intersections)):
-                # if j[series[0].y, series[0].x] != 0:
-                    # series[0].isection_ind = j
-                    # intersection_nodes[j].append(series[0])
-                    # break
-            # continue
 
-        x1 = series[0].x
-        y1 = series[0].y
-        dy = series[0].y - series[1].y
-        dx = series[0].x - series[1].x
-        if dx == 0: dx = 0.00001
-        if dy == 0: dy = -0.00001
-        m = dy/dx
-        theta = math.atan(abs(m))
-        xv = 0
-        yv = 0
-        l = 1
-        # try:
-        while yellowed[round(y1 - yv), round(x1 - xv)] == 0:
-            # TODO: What in the absolute sodding hell does this do
-            # and why does it work so well
-            xv = l * math.cos(theta) * sign(dx) * -1
-            yv = l * math.sin(theta) * sign(dy) * -1
-            l += 1
+        inode = addIsectionNodeToEnd(series[0], series[1], series, intersection_nodes, labels_im)
+        series.insert(0, inode)
+        inode = addIsectionNodeToEnd(series[-1], series[-2], series, intersection_nodes, labels_im)
+        series.append(inode)
 
-        # now we have to find which one
-
-        # move in a little bit
-        l += road_width/8
-        xv = l * math.cos(theta) * sign(dx) * -1
-        yv = l * math.sin(theta) * sign(dy) * -1
-
-        inode = None
-        for j in range(len(intersections)):
-            if intersections[j][round(y1 - yv), round(x1 - xv)] != 0:
-                inode = PathNode(x1 - round(xv), y1 - round(yv), series[i])
-                inode.isection_ind = j
-                inode.add_conn(series[0])
-                intersection_nodes[j].append(inode)
-                break
-
-        if inode != None:
-            series.insert(0, inode)
-        else:
-            print("aaaa")
         
-        # AGAIN but now last
-        # TODO: dedup logic
-        if yellowed[round(series[-1].y), round(series[-1].x)] != 0:
-            # find which one
-            series[0].isection_ind = yellowed[round(series[0].y, series[0].x)]
-            intersection_nodes[series[0].isection_ind].append(series[0])
-            # for j in range(len(intersections)):
-            #     if j[series[-1].y, series[-1].x] != 0:
-            #         series[-1].isection_ind = j
-            #         intersection_nodes[j].append(series[-1])
-            #         break
-            # continue
-
-        x1 = series[-1].x
-        y1 = series[-1].y
-        dy = series[-1].y - series[-2].y
-        dx = series[-1].x - series[-2].x
-        if dx == 0: dx = 0.00001
-        # if dy == 0: dy = 0.00001
-        m = dy/dx
-        theta = math.atan(abs(m))
-        xv = 0
-        yv = 0
-        l = 1
-        # try:
-        while yellowed[round(y1 + yv), round(x1 + xv)] == 0:
-            # TODO: What in the absolute sodding hell does this do
-            # and why does it work so well
-            xv = l * math.cos(theta) * sign(dx)
-            yv = l * math.sin(theta) * sign(dy)
-            l += 1
-            if abs(round(y1 + yv)) >= yellowed.shape[0] or abs(round(x1 + xv)) >= yellowed.shape[1]: break
-
-        # overshoot just a little, maybe?
-        # xv = (l+2) * math.cos(theta) * sign(dx)
-        # yv = (l+2) * math.sin(theta) * sign(dy)
-
-        l += road_width/8
-        xv = l * math.cos(theta) * sign(dx)
-        yv = l * math.sin(theta) * sign(dy)
-
-        # now we have to find which one
-        inode = None
-        j = yellowed[round(y1 + yv), round(x1 + xv)]
-        print(j)
-        # for j in range(len(intersections)):
-            # if intersections[j][round(y1 + yv), round(x1 + xv)] != 0:
-        inode = PathNode(x1 + round(xv), y1 + round(yv), series[i])
-        inode.isection_ind = 0
-        inode.add_conn(series[-1])
-        isnodes.append(inode)
-        # break
-
-        if inode != None:
-            series.append(inode)
-        else:
-            print("bbb")
-            # guess i guess
-            # l = 30
-            # xv = l * math.cos(theta) * sign(dx)
-            # yv = l * math.sin(theta) * sign(dy)
-            # inode = PathNode(x1 + round(xv), y1 + round(yv), series[i])
-            # inode.isection_ind = -2
-            # series.append(inode)
-
-
-
-# plt.show()
-
     colours = ['red', 'orange', 'green', 'blue', 'purple']
     series_idx = 0
     for series in path_series:
         if len(series) == 0: continue
-        i = -1
-        if series[i+1].isection_ind != -1:
-            plt.scatter([series[i+1].x], [series[i+1].y], c='orange')
-        else:
-            plt.scatter([series[i+1].x], [series[i+1].y], c='purple')
-        for i in range(len(series) - 1):
-            plt.plot([series[i].x, series[i+1].x], [series[i].y, series[i+1].y], colours[series_idx % len(colours)], linestyle=':')
-            if series[i+1].isection_ind != -1:
-                plt.scatter([series[i+1].x], [series[i+1].y], c='red')
+        # i = -1
+        # if series[i+1].isection_ind != -1:
+            # plt.scatter([series[i+1].x], [series[i+1].y], c='orange')
+        # else:
+            # plt.scatter([series[i+1].x], [series[i+1].y], c='purple')
+        for i in range(len(series)):
+            plt.plot([series[i].x, series[i].x], [series[i].y, series[i].y], colours[series_idx % len(colours)], linestyle=':')
+            if series[i].isection_ind != -1:
+                plt.scatter([series[i].x], [series[i].y], c='red')
             else:
-                plt.scatter([series[i+1].x], [series[i+1].y], c='blue')
+                plt.scatter([series[i].x], [series[i].y], c='blue')
 
-        series_idx += 1
+        # series_idx += 1
 
     subpltind += 1
 
 # now we link up the intersections
 # go through each
     isections = set()
-    for nodes in [isnodes]: # intersection_nodes:
-        """
-        if len(nodes) == 0: continue
-        # pull the same annoying circular linking trick
-        q = deque(nodes[1:])
-        nodes_linear = [nodes[0]]
-        while len(q) != 0:
-            # find the closest that isnt already in the list
-            mindist = math.inf
-            mn = None
-            for node in q:
-                dist = math.sqrt((node.x - nodes_linear[-1].x)**2 + (node.y - nodes_linear[-1].y)**2)
-                if dist < mindist:
-                    mindist = dist
-                    mn = node
 
-            # now, connect it to odd ones plz
-            q.remove(mn)
-            for inverse_idx in range(-1, -len(nodes_linear) - 1, -2):
-                nodes_linear[inverse_idx].add_conn(mn)
-
-            nodes_linear.append(mn)
-        """
-        if len(nodes) == 0: continue
-        for node in nodes:
-            for other in nodes:
-                if node != other:
-                    node.add_conn(other)
-        isection = controller.model.Intersection(nodes)
+    for intersection in intersection_nodes:
+        if len(intersection) == 0: continue
+        for node in intersection:
+            for node2 in intersections:
+                if node == node2: continue
+                node.add_conn(node2)
+        isection = controller.model.Intersection(intersection)
         isections.add(isection)
 
-        # for i in range(len(nodes_linear)):
-            # nodes_linear[i].add_conn(nodes_linear[(i+1)%len(nodes_linear)])
-            # for b in range(i):
-                # if i%2 != b%2:
-                    # nodes_linear[i].add_conn(nodes_linear[b])
 
     plt.figure()
 
@@ -618,7 +478,7 @@ def mapFromFilteredImg(img):
     for series in path_series:
         for node in series:
             all_of_them.add(node)
-    print(len(all_of_them))
+    print(len(all_of_them), "total nodes")
 # plot this garbage
     for node in list(all_of_them):
         for other in node.conns:
