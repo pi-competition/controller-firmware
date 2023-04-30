@@ -45,12 +45,16 @@ def tick(graph, cars):
     for k, car in cars.items():
         if car.x is None:
             print("uninitted car", k, car)
+            car.setEnabled(False)
             continue
         if car.zone == car.dest:
             # it is arrived
             print("congrations you are arrived")
             car.path = None
             car.dest = None
+            car.setEnabled(False)
+            continue
+        car.setEnabled(True)
         if car.path is None:
             continue
         #     car.zbounce = -1 - car.zbounce
