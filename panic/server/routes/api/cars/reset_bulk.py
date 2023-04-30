@@ -37,7 +37,7 @@ class ResetBulk(Resource):
         print(app.config["DEVICES"])
         reset = []
         for id in data["ids"]:
-            item = next((item for item in app.config["DEVICES"] if item["info"] != None and item["type"] == "CAR" and item["name"] == f"CAR-{id + 1}"), None)
+            item = next((item for item in app.config["DEVICES"] if item["info"] != None and item["type"] == "CAR" and item["info"]["id"] == id), None)
             if not item:
                 return error(f"Invalid car ID {id}", 400)
             if item["status"] != "online":
