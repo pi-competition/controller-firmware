@@ -49,8 +49,10 @@ def bearingBetween2Points(s_x, s_y, d_x, d_y):
     else:
         return (1/2) * math.pi - theta
 
+tick = 0
 
 def updateCamera():
+    global tick
     if controller.shared.debug: return
 
     img = v.read()
@@ -69,21 +71,25 @@ def updateCamera():
 
         theta = bearingBetween2Points(x, y, tl_x, tl_y)
 
-        fig, ax = plt.subplots()
-        ax.imshow(img)
-        ax.plot([centers[idx][0]], [centers[idx][1]], color="green", marker="o")
-        length = 500
-        x_ = centers[idx][0] + length * math.sin(theta)
-        y_ = centers[idx][1] + length * math.cos(theta)
+        if (not controller.shared.headless) and tick % 5 == 0:
+            
+            fig, ax = plt.subplots()
+            ax.imshow(img)
+            ax.plot([centers[idx][0]], [centers[idx][1]], color="green", marker="o")
+            length = 500
+            x_ = centers[idx][0] + length * math.sin(theta)
+            y_ = centers[idx][1] + length * math.cos(theta)
 
-        ax.plot([x_], [y_], color="blue", marker="o")
+            ax.plot([x_], [y_], color="blue", marker="o")
         
-        if not controller.shared.cars[ids[idx][0]].immediate_target is None:
-            ax.plot([controller.shared.cars[ids[idx][0]].immediate_target.x], [controller.shared.cars[ids[idx][0]].immediate_target.y], color="red", marker="o")
+            if not controller.shared.cars[ids[idx][0]].immediate_target is None:
+                ax.plot([controller.shared.cars[ids[idx][0]].immediate_target.x], [controller.shared.cars[ids[idx][0]].immediate_target.y], color="red", marker="o")
 
-        print(theta)
+            print(theta)
 
-        plt.show()
+            plt.show()
+
+        tick += 1
         
 
 

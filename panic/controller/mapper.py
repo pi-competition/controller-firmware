@@ -36,15 +36,16 @@ params = cv.SimpleBlobDetector_Params()
 
 # Change thresholds
 params.minThreshold = 1
-params.maxThreshold = 500
+params.maxThreshold = 50000
 
 
 # Filter by Area.
 params.filterByArea = True
 params.minArea = 40
+params.maxArea = 100000
 
 params.blobColor = -1
-params.filterByColor = True
+params.filterByColor = False
 
 # Filter by Circularity
 params.filterByCircularity = False
@@ -154,7 +155,7 @@ def mapFromFilteredImg(img):
 
     plt.imshow(hsv); plt.show()
 # BLACK SENS
-    sensitivity = 150
+    sensitivity = 150 if not controller.shared.debug else 50
     element = cv.getStructuringElement(cv.MORPH_RECT, (2,2))
     lower_white = np.array([0,0,0])
     upper_white = np.array([255,255,sensitivity])
