@@ -1,6 +1,16 @@
 import json
 from flask import Response
 from http import HTTPStatus
+
+import json
+import numpy as np
+
+class CustomJSONizer(json.JSONEncoder):
+    def default(self, obj):
+        return super().encode(bool(obj)) \
+            if isinstance(obj, np.bool_) \
+            else super().default(obj)
+
 def error(message, status_code=400):
     j = json.dumps(
         {
@@ -23,7 +33,7 @@ def success(data, status_code=200):
             # get the status code message from the status code
             "message": str(HTTPStatus(status_code).phrase),
             "data": data,
-        }, allow_nan=False
+        }, allow_nan=False, cls=CustomJSONizer
     )
     
     return Response(j, status=status_code, mimetype="application/json")
