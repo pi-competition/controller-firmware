@@ -46,7 +46,7 @@ if controller.shared.debug:
     params.maxArea = 100
 
 params.blobColor = -1
-params.filterByColor = False
+params.filterByColor = not controller.shared.debug
 
 # Filter by Circularity
 params.filterByCircularity = False
