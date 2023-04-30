@@ -517,7 +517,7 @@ def mapFromFilteredImg(img):
 
     for zone in net.nodes():
         for other in list(zone.conns):
-            net.add_edge(*(other.zone, zone))
+            net.add_edge(*(other, zone))
         # i am beyond all comprehension
         # for n in zone.nodes[-1].conns:
             # if n.zone != zone: net.add_edge(*(n.zone, zone))
