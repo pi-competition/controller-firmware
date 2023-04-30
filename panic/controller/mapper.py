@@ -448,6 +448,19 @@ def mapFromFilteredImg(img):
         inode = addIsectionNodeToEnd(series[-1], series[-2], series, intersection_nodes, labels_im)
         series.append(inode)
 
+# now we link up the intersections
+# go through each
+    isections = set()
+
+    for intersection in intersection_nodes:
+        if len(intersection) == 0: continue
+        for node in intersection:
+            for node2 in intersections:
+                if node == node2: continue
+                node.add_conn(node2)
+        isection = controller.model.Intersection(intersection)
+        isections.add(isection)
+
     for zone in list(zones_all):
         zone.recompute()
 
@@ -475,18 +488,7 @@ def mapFromFilteredImg(img):
 
     subpltind += 1
 
-# now we link up the intersections
-# go through each
-    isections = set()
 
-    for intersection in intersection_nodes:
-        if len(intersection) == 0: continue
-        for node in intersection:
-            for node2 in intersections:
-                if node == node2: continue
-                node.add_conn(node2)
-        isection = controller.model.Intersection(intersection)
-        isections.add(isection)
 
 
     plt.figure()
