@@ -448,6 +448,9 @@ def mapFromFilteredImg(img):
         inode = addIsectionNodeToEnd(series[-1], series[-2], series, intersection_nodes, labels_im)
         series.append(inode)
 
+    for zone in list(zones_all):
+        zone.recompute()
+
         
     colours = ['red', 'orange', 'green', 'blue', 'purple']
     series_idx = 0

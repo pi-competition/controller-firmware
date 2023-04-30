@@ -104,6 +104,12 @@ class Zone:
         # self.conns = set()
         self.car_within = None
 
+        
+        self.conns = set()
+        # if self.end_other_zone != None:
+        # if not other.zone is None: other.zone.conns.add(self)
+
+    def recompute(self):
         self.start_other_zone = None
         self.start_other_node = None
         for i in list(self.throughpath[0].conns):
@@ -118,10 +124,11 @@ class Zone:
                 # the one
                 self.end_other_zone = i.zone
                 self.end_other_node = i
-
-        self.conns = set()
+        self.end_other_zone.conns.add(self)
+        self.start_other_zone.conns.add(self)
         self.conns.add(self.end_other_zone)
         self.conns.add(self.start_other_zone)
+
 
     def set_car(self, car):
         self.car_within = car
@@ -171,7 +178,7 @@ class Intersection:
         for i in range(len(self.nodes)):
             for other in (self.nodes[:i] + self.nodes[i+1:]):
                 self.conns.add(other.zone)
-                other.zone.conns.add(self)
+                if not other.zone is None: other.zone.conns.add(self)
                 self.dists[(self.nodes[i], other)] = self.nodes[i].dist(other)
         for node in nodes:
             node.zone = self
