@@ -17,6 +17,7 @@ class Restart(Resource):
         if auth_header != app.config["CONFIG"]["API_PASSWORD"]:
             return error("You do not have permission to access this resource.", 403)
         # send a 204 response then restart the raspberry pi (delay in a thread)
+        return error("This endpoint has been disabled", 503)
         def restart():
             time.sleep(1)
             print("goodbye")
