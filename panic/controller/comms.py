@@ -34,7 +34,9 @@ def tellCarWhereItsGoing(car: Car, node):
 def carSetsDestination(car: Car, dest: Zone, graph):
     car.dest = dest
     car.path = zoneToZoneSearch(graph, car.zone, dest)
-    print("Car path:", car.path, car.zone, dest)
+    print("Car path:", car.path)
+    print(len(car.path))
+    print(car.zone, dest)
     graph.place_locks[car] = {}
 
     car.updateTarget(dest.nodes[math.floor(len(dest.nodes) / 2)])
@@ -66,7 +68,7 @@ def tick(graph, cars):
                 maxidx = idx
                 node_ = node
         if node_ is None:
-            print("uhhhh")
+            print("significant deviation uhhhh")
             continue
         car_node = node_
         car_zone = car_node.zone

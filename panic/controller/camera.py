@@ -37,18 +37,17 @@ def fishOutArucoTags(img):
 def bearingBetween2Points(s_x, s_y, d_x, d_y):
     dx = d_x - s_x
     dy = d_y - s_y
+    if dx == 0: dx = 0.001
     theta = math.atan(abs(dy/dx))
     if dx < 0:
         if dy < 0:
-            theta = (3/2) * math.pi - theta
+            return (3/2) * math.pi - theta
         else:
-            theta = (3/2) * math.pi + theta
+            return (3/2) * math.pi + theta
     elif dy < 0:
-        theta = (1/2) * math.pi + theta
+        return (1/2) * math.pi + theta
     else:
-        theta = (1/2) * math.pi - theta
-
-    return theta
+        return (1/2) * math.pi - theta
 
 
 def updateCamera():
