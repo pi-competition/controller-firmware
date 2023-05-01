@@ -56,7 +56,7 @@ def tick(graph, cars):
             car.dest = None
             car.setEnabled(False)
             continue
-        if True:
+        if False: # car.node is not None:
             
             if car.dest is None:
                 print("dest none")
@@ -76,13 +76,14 @@ def tick(graph, cars):
         car_nodes = graph.fromPosToClosestNode(car.x, car.y, 128)
         maxidx = -1
         node__ = None
-        print(car.path)
-        for node in car_nodes:
-            if not node in car.path: continue
-            idx = car.path.index(node)
-            if idx > maxidx:
-                maxidx = idx
-                node__ = node
+        if car.path is not None:
+            print(car.path)
+            for node in car_nodes:
+                if not node in car.path: continue
+                idx = car.path.index(node)
+                if idx > maxidx:
+                    maxidx = idx
+                    node__ = node
 
         if node__ is not None:
             print("speedy boi")
@@ -102,7 +103,7 @@ def tick(graph, cars):
         car_node = node_
         car.node = car_node
 
-        if car.path is None: continue
+        if car.path is None or car.dest is None: continue
 
         if not car.node in car.path:
             carSetsDestination(car, car.dest, graph)
@@ -170,18 +171,18 @@ def tick(graph, cars):
 
         # now we issue a correction
         # TODO: do this logic car-side
-        dx = next_node.x - car.x
-        if dx == 0: dx = 0.0001
-        dy = next_node.y - car.y
-        # pronounced they-ta
-        theta = math.atan(dy/dx)
-        # now, compensate into a bearing
-        if dx < 0:
-            # negi, we work off 3/2 pi (270)
-            # and then add mafs
-            theta = (3/2) * math.pi  - theta
-        else:
-            theta = (1/2) * math.pi - theta
+        # dx = next_node.x - car.x
+        # if dx == 0: dx = 0.0001
+        # dy = next_node.y - car.y
+        # # pronounced they-ta
+        # theta = math.atan(dy/dx)
+        # # now, compensate into a bearing
+        # if dx < 0:
+        #     # negi, we work off 3/2 pi (270)
+        #     # and then add mafs
+        #     theta = (3/2) * math.pi  - theta
+        # else:
+        #     theta = (1/2) * math.pi - theta
 
         
         # we find the next node
