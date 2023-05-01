@@ -16,6 +16,9 @@ class SetDestination(Resource):
 
         print("Setting desintation", data)
 
+        if len(controller.shared.cars.values()) == 0:
+            return error("no car lol", 400)
+
         car = list(controller.shared.cars.values())[0]
         node = controller.shared.graph.fromPosToClosestNodeSingular(int(data["x"]), int(data["y"]))
         # zone = node.zone
