@@ -109,6 +109,7 @@ def addIsectionNodeToEnd(node, nextNode, curr_series, intersection_nodes, labell
     inode = PathNode(x1 - round(xv), y1 - round(yv), curr_series)
     inode.isection_ind = labelled[round(y1 - yv), round(x1 - xv)]
     inode.add_conn(node)
+    node.add_conn(inode)
     intersection_nodes[inode.isection_ind].append(inode)
     # inode = None
     # for j in range(len(intersections)):
@@ -458,6 +459,7 @@ def mapFromFilteredImg(img):
             for node2 in intersections:
                 if node == node2: continue
                 node.add_conn(node2)
+                node2.add_conn(node)
         isection = controller.model.Intersection(intersection)
         isections.add(isection)
 
@@ -513,12 +515,16 @@ def mapFromFilteredImg(img):
     
     
     net = nx.Graph()
-    net.add_nodes_from(list(zones_all))
-    net.add_nodes_from(list(isections))
+    net.add_nodes_from(list(all_of_them))
+    for node in net.nodes():
+        for other in list(node.conns):
+            net.add_edge(*(other, node))
+    # net.add_nodes_from(list(zones_all))
+    # net.add_nodes_from(list(isections))
 
-    for zone in net.nodes():
-        for other in list(zone.conns):
-            net.add_edge(*(other, zone))
+    # for zone in net.nodes():
+        # for other in list(zone.conns):
+            # net.add_edge(*(other, zone))
         # i am beyond all comprehension
         # for n in zone.nodes[-1].conns:
             # if n.zone != zone: net.add_edge(*(n.zone, zone))

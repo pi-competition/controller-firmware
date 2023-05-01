@@ -18,7 +18,7 @@ class SetDestination(Resource):
 
         car = list(controller.shared.cars.values())[0]
         node = controller.shared.graph.fromPosToClosestNodeSingular(int(data["x"]), int(data["y"]))
-        zone = node.zone
-        controller.comms.carSetsDestination(car, zone, controller.shared.graph)
+        # zone = node.zone
+        controller.comms.carSetsDestination(car, node, controller.shared.graph)
 
         return success({}, 204)

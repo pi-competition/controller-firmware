@@ -31,9 +31,9 @@ def tellCarWhereItIs(car: Car, x, y, angle):
 def tellCarWhereItsGoing(car: Car, node):
     car.updateTarget(node.x, node.y)
 
-def carSetsDestination(car: Car, dest: Zone, graph):
+def carSetsDestination(car: Car, dest: Node, graph):
     car.dest = dest
-    car.path = zoneToZoneSearch(graph, car.zone, dest)
+    car.path = nodeToNodeSearch(graph, car.node, dest)
     print("Car path:", car.path)
     print(len(car.path))
     print(car.zone, dest)
@@ -48,14 +48,15 @@ def tick(graph, cars):
             print("uninitted car", k, car)
             car.setEnabled(False)
             continue
-        if car.zone == car.dest and (not (car.zone is None)):
+        if car.node == car.dest:
+        # if car.zone == car.dest and (not (car.zone is None)):
             # it is arrived
             print("congrations you are arrived")
             car.path = None
             car.dest = None
             car.setEnabled(False)
             continue
-        if not car.zone is None:
+        if True:
             
             if car.dest is None:
                 print("dest none")
@@ -76,8 +77,8 @@ def tick(graph, cars):
         maxidx = -1
         node__ = None
         for node in car_nodes:
-            if not node.zone in car.path: continue
-            idx = car.path.index(node.zone)
+            if not node in car.path: continue
+            idx = car.path.index(node)
             if idx > maxidx:
                 maxidx = idx
                 node__ = node
@@ -86,7 +87,6 @@ def tick(graph, cars):
             print("speedy boi")
 
         car_nodes = graph.fromPosToClosestNodeSingular(car.x, car.y)
-        maxidx = -1
         node_ = node__
         node_ = car_nodes if node_ is None else node_
         # for node in car_nodes:
@@ -99,18 +99,24 @@ def tick(graph, cars):
             print("significant deviation uhhhh")
             continue
         car_node = node_
-        car_zone = car_node.zone
-        if car.zone is None:
-            car.zone = car_zone
-            continue
-        if car_zone != car.zone:
-            print("Car has non-consentually entered a zone")
-            car.zone = car_zone
-            if car.path is None or not car.zone in car.path:
-                if car.dest is None:
-                    # TODO: ben do work here
-                    car.dest = list(graph.zones.nodes)[0 if car.zone == list(graph.zones.nodes)[-1] else -1]
-                carSetsDestination(car, car.dest, graph)
+        car.node = car_node
+
+        if not car.node in car.path:
+            carSetsDestination(car, car.dest, graph)
+
+
+        # car_zone = car_node.zone
+        # if car.zone is None:
+        #     car.zone = car_zone
+        #     continue
+        # if car_zone != car.zone:
+        #     print("Car has non-consentually entered a zone")
+        #     car.zone = car_zone
+        #     if car.path is None or not car.zone in car.path:
+        #         if car.dest is None:
+        #             # TODO: ben do work here
+        #             car.dest = list(graph.zones.nodes)[0 if car.zone == list(graph.zones.nodes)[-1] else -1]
+        #         carSetsDestination(car, car.dest, graph)
 
 
         car.setEnabled(True)
@@ -119,42 +125,45 @@ def tick(graph, cars):
         # yes we do
 
         # trans checks
-        if car.is_transient:
-            if car.zone == car.target_zone:
-                car.is_transient = False
-                car.target_zone = None
-            else:
-                # its working on it okay
-                continue
-        
-        next_zone = car.path[car.path.index(car.zone) + 1]
-        # here comes the awful logic
-        # find the next node we need to visit
-        node_nodes = car.zone.nodeToNextZone(car_node, next_zone)
-        print("Nodes left", len(node_nodes))
-        if len(node_nodes) < 4:
-            # move on!
-            car.target_zone = next_zone
-            # find the node of interest
-            noi = None
-            for node in list(car.target_zone.nodes):
-                for other in list(node.conns):
-                    if other.zone == car.zone:
-                        # whoo
-                        noi = node
-                        break
-                if noi is not None: break
+        # if car.is_transient:
+        #     if car.zone == car.target_zone:
+        #         car.is_transient = False
+        #         car.target_zone = None
+        #     else:
+        #         # its working on it okay
+        #         continue
 
-            if noi is None:
-                print("this is not good")
-                continue
-            car.immediate_target = noi
-            car.is_transient = True
-            car.updateTarget(car.immediate_target)
-        next_node = car.zone.nodeToNextZone(car_node, next_zone)[0]
-        if car.immediate_target != next_node:
-            car.immediate_target = next_node
-            car.updateTarget(next_node)
+        next_node = car.path[car.path.index(car.node) + 1]
+        car.updateTarget(next_node)
+        
+        # next_zone = car.path[car.path.index(car.zone) + 1]
+        # # here comes the awful logic
+        # # find the next node we need to visit
+        # node_nodes = car.zone.nodeToNextZone(car_node, next_zone)
+        # print("Nodes left", len(node_nodes))
+        # if len(node_nodes) < 4:
+        #     # move on!
+        #     car.target_zone = next_zone
+        #     # find the node of interest
+        #     noi = None
+        #     for node in list(car.target_zone.nodes):
+        #         for other in list(node.conns):
+        #             if other.zone == car.zone:
+        #                 # whoo
+        #                 noi = node
+        #                 break
+        #         if noi is not None: break
+        #
+        #     if noi is None:
+        #         print("this is not good")
+        #         continue
+        #     car.immediate_target = noi
+        #     car.is_transient = True
+        #     car.updateTarget(car.immediate_target)
+        # next_node = car.zone.nodeToNextZone(car_node, next_zone)[0]
+        # if car.immediate_target != next_node:
+        #     car.immediate_target = next_node
+        #     car.updateTarget(next_node)
 
         # now we issue a correction
         # TODO: do this logic car-side

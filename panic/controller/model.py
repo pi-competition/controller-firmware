@@ -29,7 +29,7 @@ class PathNode:
 class Car:
     def __init__(self, ip):
         self.ip = ip
-        self.zone = None
+        self.node = None
         self.dest = None
         self.immediate_target = None
         self.x = None
