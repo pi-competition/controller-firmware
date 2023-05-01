@@ -61,7 +61,6 @@ params.filterByInertia = False
 params.minInertiaRatio = 0.01
 
 def addIsectionNodeToEnd(node, nextNode, curr_series, intersection_nodes, labelled):
-    pass
     # intersection mafs
     # we BACKtrack along orig_m
     # first, if it's already in an intsect, we need not bother
@@ -108,6 +107,7 @@ def addIsectionNodeToEnd(node, nextNode, curr_series, intersection_nodes, labell
 
     inode = PathNode(x1 - round(xv), y1 - round(yv), curr_series)
     inode.isection_ind = labelled[round(y1 - yv), round(x1 - xv)]
+    print("added to", inode.isection_ind)
     inode.add_conn(node)
     node.add_conn(inode)
     intersection_nodes[inode.isection_ind].append(inode)
@@ -456,7 +456,7 @@ def mapFromFilteredImg(img):
     for intersection in intersection_nodes:
         if len(intersection) == 0: continue
         for node in intersection:
-            for node2 in intersections:
+            for node2 in intersection:
                 if node == node2: continue
                 node.add_conn(node2)
                 node2.add_conn(node)
