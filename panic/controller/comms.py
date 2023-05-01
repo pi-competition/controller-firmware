@@ -119,7 +119,7 @@ def tick(graph, cars):
         # find the next node we need to visit
         node_nodes = car.zone.nodeToNextZone(car_node, next_zone)
         print("Nodes left", len(node_nodes))
-        if len(node_nodes) < 2:
+        if len(node_nodes) < 4:
             # move on!
             car.target_zone = next_zone
             # find the node of interest
