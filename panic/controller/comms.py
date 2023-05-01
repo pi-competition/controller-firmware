@@ -33,7 +33,7 @@ def tellCarWhereItsGoing(car: Car, node):
 
 def carSetsDestination(car: Car, dest: Zone, graph):
     car.dest = dest
-    car.path, _ = zoneToZoneSearch(graph, car.zone, dest)
+    car.path = zoneToZoneSearch(graph, car.zone, dest)
     print("Car path:", car.path)
     print(len(car.path))
     print(car.zone, dest)
