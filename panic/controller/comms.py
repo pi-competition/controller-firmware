@@ -43,6 +43,7 @@ def carSetsDestination(car: Car, dest: Zone, graph):
 
 def tick(graph, cars):
     for k, car in cars.items():
+        print("comms ticking")
         if car.x is None:
             print("uninitted car", k, car)
             car.setEnabled(False)
@@ -57,9 +58,12 @@ def tick(graph, cars):
         if not car.zone is None:
             
             if car.dest is None:
+                print("dest none")
                 car.setEnabled(False)
                 continue
             if car.path is None:
+                print("path none")
+                car.setEnabled(False)
                 continue
         print("car running something")
         #     car.zbounce = -1 - car.zbounce
