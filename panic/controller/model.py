@@ -204,6 +204,9 @@ class Intersection:
             target = next_zone.throughpath[-1]
 
         # now we djikstra
-        path = pathfinder.nodeToNodeSearch(node, target)
+        path, _ = pathfinder.nodeToNodeSearch(node, target)
+        if len(path) == 1:
+            print("oh no")
+            return path
         return path[1:]
 
