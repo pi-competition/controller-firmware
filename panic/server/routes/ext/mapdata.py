@@ -18,11 +18,11 @@ class MapData(Resource):
             }
             nodes.append(new_node)
         zones = []
-        for zone in controller.shared.graph.zones:
-            new_zone = [{"x":int(n.x), "y":int(n.y)} for n in zone.nodes]
-            zones.append(new_zone)
+        # for zone in controller.shared.graph.zones:
+            # new_zone = [{"x":int(n.x), "y":int(n.y)} for n in zone.nodes]
+            # zones.append(new_zone)
 
 
 
-        return success({"zones": zones, "nodes": nodes})
+        return success({"nodes": nodes})
 
