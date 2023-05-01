@@ -136,7 +136,12 @@ def tick(graph, cars):
         #     else:
         #         # its working on it okay
         #         continue
-
+        
+        if car.node == car.dest or len(car.path) <= car.path.index(car.node) + 1:
+            car.dest = None
+            car.path = None
+            print("ARRIVAL WOOOO")
+            continue
         next_node = car.path[car.path.index(car.node) + 1]
         car.updateTarget(next_node)
         
