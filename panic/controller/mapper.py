@@ -22,6 +22,7 @@ subpltrow = 3
 
 subpltind = 1
 def showimg(img, title):
+    if controller.shared.headless: return
     global subpltind
     plt.subplot(subpltrow, subpltcol, subpltind)
     plt.imshow(img)
@@ -173,14 +174,15 @@ def clipImageEdges(img):
     for i in range(4):
         cv.line(clone, bounding_points[i - 1], bounding_points[i], (255, 0, 0), 5)
 
-    showimg(clone, "bounded")
 
     mtx = cv.getPerspectiveTransform(np.float32(bounding_points), np.float32(offsets))
     warped = cv.warpPerspective(img, mtx, (width, height), flags=cv.INTER_LINEAR)
 
     controller.shared.mtx = mtx
-    showimg(warped, "warped")
-    showimg(img, "orig")
+    if not controller.shared.headless:
+        showimg(warped, "warped")
+        showimg(clone, "bounded")
+        showimg(img, "orig")
 
     return warped
     
@@ -220,8 +222,8 @@ def mapFromFilteredImg(img):
     controller.shared.mapimg = img
 
     hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV) if not controller.shared.debug else img
-
-    plt.imshow(hsv); plt.show()
+    if not controller.shared.headless:
+        plt.imshow(hsv); plt.show()
 # BLACK SENS
     sensitivity = 150 if not controller.shared.debug else 50
     element = cv.getStructuringElement(cv.MORPH_RECT, (2,2))
@@ -232,7 +234,8 @@ def mapFromFilteredImg(img):
     if not controller.shared.debug:
         thresholded = cv.erode(cv.dilate(thresholded, element, iterations=iters), element, iterations=iters)
     print("a")
-    plt.imshow(thresholded); plt.show()
+    if not controller.shared.headless:
+        plt.imshow(thresholded); plt.show()
     print("imshowed")
 # charlie thresholds
 #    lower_blue = np.array([100,50,50])
@@ -240,9 +243,10 @@ def mapFromFilteredImg(img):
     lower_blue = np.array([0, 0, 220])
     upper_blue = np.array([255, 255, 255])
     yellowed = (cv.inRange(hsv, lower_blue, upper_blue))
-
-    showimg(cv.cvtColor(img, cv.COLOR_BGR2RGB), "src")
-    showimg(cv.cvtColor(thresholded, cv.COLOR_GRAY2RGB), "thresholded")
+    
+    if not controller.shared.headless:
+        showimg(cv.cvtColor(img, cv.COLOR_BGR2RGB), "src")
+        showimg(cv.cvtColor(thresholded, cv.COLOR_GRAY2RGB), "thresholded")
 
     mask = cv.erode(yellowed, element, iterations = 4)
     mask = cv.dilate(mask, element, iterations = 4)
@@ -254,10 +258,11 @@ def mapFromFilteredImg(img):
     split = np.array(labels_im)
 
     yellowed = np.array(yellowed)
-    plt.subplot(subpltrow, subpltcol, subpltind)
-    plt.title("intsects")
-    plt.imshow(cv.cvtColor(yellowed, cv.COLOR_GRAY2RGB))
-    subpltind += 1
+    if not controller.shared.headless:
+        plt.subplot(subpltrow, subpltcol, subpltind)
+        plt.title("intsects")
+        plt.imshow(cv.cvtColor(yellowed, cv.COLOR_GRAY2RGB))
+        subpltind += 1
 
     intersections = []
     intersection_nodes = []
@@ -273,11 +278,11 @@ def mapFromFilteredImg(img):
         _x, _y = blob.pt
         x.append(round(_x))
         y.append(round(_y))
-
-    plt.subplot(subpltrow, subpltcol, subpltind)
-    plt.scatter(x, y)
-    plt.title("points")
-    subpltind += 1
+    if not controller.shared.headless:
+        plt.subplot(subpltrow, subpltcol, subpltind)
+        plt.scatter(x, y)
+        plt.title("points")
+        subpltind += 1
 
     points = np.column_stack((x, y))
 
@@ -360,7 +365,8 @@ def mapFromFilteredImg(img):
         # print(v)
         # print(v.con9c83c868ns)
 
-    plt.show()
+    if not controller.shared.headless:
+        plt.show()
 
     finished = False
     done = []
@@ -392,8 +398,9 @@ def mapFromFilteredImg(img):
                 nxt = list(nxt.conns)[0]
         dot_series.append([])
 
-    plt.subplot(subpltrow, subpltcol, subpltind)
-    plt.title("connections 4")
+    if not controller.shared.headless:
+        plt.subplot(subpltrow, subpltcol, subpltind)
+        plt.title("connections 4")
     colours = ['red', 'orange', 'green', 'blue', 'purple']
     series_idx = 0
     print(len(dot_series), dot_series)
@@ -401,8 +408,9 @@ def mapFromFilteredImg(img):
     for series in dot_series:
         if len(series) == 0: continue
         path_series.append([])
-        for i in range(len(series) - 1):
-            plt.plot([series[i].x, series[i+1].x], [series[i].y, series[i+1].y], colours[series_idx % len(colours)], linestyle=':')
+        if not controller.shared.headless:
+            for i in range(len(series) - 1):
+                plt.plot([series[i].x, series[i+1].x], [series[i].y, series[i+1].y], colours[series_idx % len(colours)], linestyle=':')
         path_series[-1].append(PathNode(series[0].x, series[0].y, series[0]))
         for i in range(1, len(series)):
             path_series[-1].append(PathNode(series[i].x, series[i].y, series[i]))
@@ -417,8 +425,9 @@ def mapFromFilteredImg(img):
 # plt.show()
 
 
-    showimg(yellowed, "yella")
-    plt.show()
+    if not controller.shared.headless:
+        showimg(yellowed, "yella")
+        plt.show()
 
     intersection_nodes = [[] for i in range(num_labels)]
 
@@ -488,27 +497,29 @@ def mapFromFilteredImg(img):
 
         # series_idx += 1
 
-    subpltind += 1
+    if not controller.shared.headless:
+        subpltind += 1
 
 
 
 
-    plt.figure()
+        plt.figure()
 
 # plt.subplot(subpltrow, subpltcol, subpltind)
 # plt.title("chorus of misery")
 
-    plt.imshow(cv.cvtColor(img, cv.COLOR_BGR2RGB))
+        plt.imshow(cv.cvtColor(img, cv.COLOR_BGR2RGB))
 
     all_of_them = set()
     for series in path_series:
         for node in series:
             all_of_them.add(node)
     print(len(all_of_them), "total nodes")
+    if not controller.shared.headless:
 # plot this garbage
-    for node in list(all_of_them):
-        for other in node.conns:
-            plt.plot([node.x, other.x], [node.y, other.y], 'red', linestyle=':')
+        for node in list(all_of_them):
+            for other in node.conns:
+                plt.plot([node.x, other.x], [node.y, other.y], 'red', linestyle=':')
 
     print("here")
 
@@ -532,10 +543,11 @@ def mapFromFilteredImg(img):
             # if n.zone != zone: net.add_edge(*(n.zone, zone))
 
     graph = controller.model.Graph(all_of_them, net) # list(zones_all.union(isections)))
-    if not "noplot" in argv: plt.show()
+    if not controller.shared.headless:
+        if not "noplot" in argv: plt.show()
 
-    nx.draw(net)
-    plt.show()
+        nx.draw(net)
+        plt.show()
 
     return (graph, all_of_them, zones_all, isections)
 
