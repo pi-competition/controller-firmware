@@ -36,7 +36,7 @@ def carSetsDestination(car: Car, dest, graph):
     car.path = nodeToNodeSearch(graph, car.node, dest)
     print("Car path:", car.path)
     print(len(car.path))
-    print(car.zone, dest)
+    # print(car.zone, dest)
     graph.place_locks[car] = {}
 
     car.updateTarget(dest.nodes[math.floor(len(dest.nodes) / 2)])
