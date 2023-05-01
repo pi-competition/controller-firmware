@@ -48,7 +48,7 @@ def tick(graph, cars):
             print("uninitted car", k, car)
             car.setEnabled(False)
             continue
-        if car.node == car.dest:
+        if car.node == car.dest and not car.node == None:
         # if car.zone == car.dest and (not (car.zone is None)):
             # it is arrived
             print("congrations you are arrived")
@@ -101,6 +101,8 @@ def tick(graph, cars):
             continue
         car_node = node_
         car.node = car_node
+
+        if car.path is None: continue
 
         if not car.node in car.path:
             carSetsDestination(car, car.dest, graph)
