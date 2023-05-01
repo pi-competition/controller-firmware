@@ -104,10 +104,39 @@ def tick(graph, cars):
         # we know where the car is
         # do we know where the car is going?
         # yes we do
+
+        # trans checks
+        if car.is_transient:
+            if car.zone == car.target_zone:
+                car.is_transient = False
+                car.target_zone = None
+            else:
+                # its working on it okay
+                continue
         
         next_zone = car.path[car.path.index(car.zone) + 1]
         # here comes the awful logic
         # find the next node we need to visit
+        node_nodes = car.zone.nodeToNextZone(car_node, next_zone)
+        if len(node_nodes) < 2:
+            # move on!
+            car.target_zone = next_zone
+            # find the node of interest
+            noi = None
+            for node in list(car.target_zone.nodes):
+                for other in list(node.conns):
+                    if other.zone == car.zone:
+                        # whoo
+                        noi = node
+                        break
+                if noi is not None: break
+
+            if noi is None:
+                print("this is not good")
+                continue
+            car.immediate_target = noi
+            car.is_transient = True
+            car.updateTarget(car.immediate_target)
         next_node = car.zone.nodeToNextZone(car_node, next_zone)[0]
         if car.immediate_target != next_node:
             car.immediate_target = next_node
