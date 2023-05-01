@@ -31,7 +31,7 @@ def tellCarWhereItIs(car: Car, x, y, angle):
 def tellCarWhereItsGoing(car: Car, node):
     car.updateTarget(node.x, node.y)
 
-def carSetsDestination(car: Car, dest: Node, graph):
+def carSetsDestination(car: Car, dest, graph):
     car.dest = dest
     car.path = nodeToNodeSearch(graph, car.node, dest)
     print("Car path:", car.path)
