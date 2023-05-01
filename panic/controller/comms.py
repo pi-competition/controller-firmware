@@ -141,6 +141,7 @@ def tick(graph, cars):
             car.dest = None
             car.path = None
             print("ARRIVAL WOOOO")
+            car.setEnabled(False)
             continue
         next_node = car.path[car.path.index(car.node) + 1]
         car.updateTarget(next_node)

@@ -159,7 +159,7 @@ from controller import camera
 from matplotlib import pyplot as plt
 # camera.previewToTakePicSetup()
 while True:
-    input("Press enter to take map image")
+    if not controller.shared.headless: input("Press enter to take map image")
     if controller.shared.debug:
         temp_img = cv2.imread(input().strip())
     else:
@@ -169,7 +169,7 @@ while True:
         plt.imshow(temp_img)
         plt.show()
 
-    if "y" == input("is this your picture?"): break
+    if controller.shared.headless or "y" == input("is this your picture?"): break
 
 controller.shared.camimg = temp_img
 
