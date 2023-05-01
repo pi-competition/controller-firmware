@@ -76,6 +76,7 @@ def tick(graph, cars):
         car_nodes = graph.fromPosToClosestNode(car.x, car.y, 128)
         maxidx = -1
         node__ = None
+        print(car.path)
         for node in car_nodes:
             if not node in car.path: continue
             idx = car.path.index(node)
