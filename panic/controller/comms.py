@@ -33,7 +33,7 @@ def tellCarWhereItsGoing(car: Car, node):
 
 def carSetsDestination(car: Car, dest: Zone, graph):
     car.dest = dest
-    car.path = zoneToZoneSearch(graph, car.zone, dest)
+    car.path, _ = zoneToZoneSearch(graph, car.zone, dest)
     print("Car path:", car.path)
     print(len(car.path))
     print(car.zone, dest)
@@ -47,19 +47,21 @@ def tick(graph, cars):
             print("uninitted car", k, car)
             car.setEnabled(False)
             continue
-        if car.zone == car.dest and not car.zone is None:
+        if car.zone == car.dest and (not (car.zone is None)):
             # it is arrived
             print("congrations you are arrived")
             car.path = None
             car.dest = None
             car.setEnabled(False)
             continue
-        if car.dest is None:
-            car.setEnabled(False)
-            continue
-        if car.path is None:
-            continue
-        car.setEnabled(True)
+        if car.zone is None:
+            
+            if car.dest is None:
+                car.setEnabled(False)
+                continue
+            if car.path is None:
+                continue
+        print("car running something")
         #     car.zbounce = -1 - car.zbounce
         #     carSetsDestination(car, list(graph.zones)[car.zbounce], graph)
         # while car.zone == car.dest or (car.path.index(car.zone) + 1) >= len(car.path):
@@ -92,6 +94,9 @@ def tick(graph, cars):
                     # TODO: ben do work here
                     car.dest = list(graph.zones.nodes)[0 if car.zone == list(graph.zones.nodes)[-1] else -1]
                 carSetsDestination(car, car.dest, graph)
+
+
+        car.setEnabled(True)
         # we know where the car is
         # do we know where the car is going?
         # yes we do
