@@ -54,7 +54,7 @@ def tick(graph, cars):
             car.dest = None
             car.setEnabled(False)
             continue
-        if car.zone is None:
+        if not car.zone is None:
             
             if car.dest is None:
                 car.setEnabled(False)
