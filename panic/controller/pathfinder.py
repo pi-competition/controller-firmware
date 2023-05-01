@@ -70,6 +70,7 @@ def genericBiDj(start, end, distance_fn, child_fn):
     return (path, total_dist)
 
 def nodeToNodeSearch(graph, n1, n2):
+    print("N2N", n1, n2)
     return nx.shortest_path(graph.zones, n1, n2)
     print("node search")
     return genericBiDj(n1, n2, lambda a, b: a.dist(b), lambda n: list(n.conns))
