@@ -7,3 +7,4 @@ camimg = None
 headless = False
 debug = False
 notag = False
+colours = {}

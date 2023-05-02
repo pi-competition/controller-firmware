@@ -39,6 +39,9 @@ with open("config.json") as f:
     CONFIG = json.loads(f.read())
     app.config["CONFIG"] = CONFIG
 
+with open("abbas.json") as f:
+    controller.shared.colours = json.loads(f.read())
+
 
 @app.errorhandler(404)
 def page_not_found(e):

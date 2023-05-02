@@ -229,6 +229,24 @@ def mapFromFilteredImg(img):
     element = cv.getStructuringElement(cv.MORPH_RECT, (2,2))
     lower_white = np.array([0,0,0])
     upper_white = np.array([255,255,sensitivity])
+    lower_blue = np.array([0, 0, 220])
+    upper_blue = np.array([255, 255, 255])
+    if "dots" in controller.shared.colours.keys():
+        print("loading dots")
+        l = controller.shared.colours["dots"]["low"]
+        h = controller.shared.colours["dots"]["high"]
+        lower_white = np.array([int(l["h"]), int(l["s"]), int(l["v"])])
+        upper_white = np.array([int(h["h"]), int(h["s"]), int(h["v"])])
+        print(lower_white, lower_blue)
+    if "intersections" in controller.shared.colours.keys():
+        print("loading isections")
+        l = controller.shared.colours["intersections"]["low"]
+        h = controller.shared.colours["intersections"]["high"]
+        lower_blue = np.array([int(l["h"]), int(l["s"]), int(l["v"])])
+        upper_blue = np.array([int(h["h"]), int(h["s"]), int(h["v"])])
+
+
+    thresholded = cv.bitwise_not(cv.inRange(hsv, lower_white, upper_white))
     thresholded = cv.bitwise_not(cv.inRange(hsv, lower_white, upper_white))
     iters = 8
     if not controller.shared.debug:
@@ -240,8 +258,7 @@ def mapFromFilteredImg(img):
 # charlie thresholds
 #    lower_blue = np.array([100,50,50])
 #    upper_blue = np.array([120,255,255])
-    lower_blue = np.array([0, 0, 220])
-    upper_blue = np.array([255, 255, 255])
+    
     yellowed = (cv.inRange(hsv, lower_blue, upper_blue))
     
     if not controller.shared.headless:
