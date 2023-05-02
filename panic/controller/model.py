@@ -40,7 +40,7 @@ class Car:
         self.is_transient = False
         self.target_zone = None
 
-        enabled = True
+        self.enabled = True
         self.setEnabled(False)
         # BEN DO WORK HERE
 
