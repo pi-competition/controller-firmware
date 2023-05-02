@@ -39,12 +39,17 @@ class Car:
         self.zbounce = 0
         self.is_transient = False
         self.target_zone = None
+
+        enabled = True
+        self.setEnabled(False)
         # BEN DO WORK HERE
 
     def summarise(self):
         return {"x":int(self.x), "y":int(self.y), "imm_target":{"x": int(self.immediate_target.x), "y":int(self.immediate_target.y)}, "dest":{"x":int(self.dest.x), "y": int(self.dest.y)}}
 
     def setEnabled(self, enabled):
+        if enabled == self.enabled: return
+        self.enabled = enabled
         requests.get("http://" + self.ip + ":5001/api/" + ("enable" if enabled else "disable"))
 
     def __hash__(self):
