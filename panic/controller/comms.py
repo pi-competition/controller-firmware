@@ -43,6 +43,8 @@ def carSetsDestination(car: Car, dest, graph):
 
 def tick(graph, cars):
     for k, car in cars.items():
+        if not car.enabled:
+            print("DISABLED")
         print("comms ticking")
         if car.x is None:
             print("uninitted car", k, car)
