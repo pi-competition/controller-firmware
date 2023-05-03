@@ -64,6 +64,7 @@ class Car:
         requests.post("http://" + self.ip + ":5001/api/pos", json={"x": int(x), "y": int(y), "angle": float(angle)})
 
     def updateTarget(self, node):
+        if self.immediate_target == node: return
         self.immediate_target = node
         print("Posting api/target on", self.ip)
         requests.post("http://" + self.ip + ":5001/api/target", json={"x": int(node.x), "y": int(node.y)})
